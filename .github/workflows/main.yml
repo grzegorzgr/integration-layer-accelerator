@@ -16,10 +16,12 @@ jobs:
     - name: Setup Kubernetes
       uses: azure/setup-kubectl@v1
       with:
-        version: 'latest'
+        version: '1.28.6'
 
     - name: Configure Kubernetes
-      run: echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+      run: echo "${{ env.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
 
     - name: Create namespace
       run: |
