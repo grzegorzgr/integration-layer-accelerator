@@ -7,8 +7,8 @@ apps:
   apigateway:
     name: api-gateway
     image:
-      repository: api-gateway
-      pullPolicy: IfNotPresent
+      repository: my-first-repository/api-gateway
+      # tag: notaglobaltag
 
     podAnnotations: {}
 
@@ -57,8 +57,8 @@ apps:
   merchant:
     name: merchant
     image:
-      repository: merchant
-      pullPolicy: IfNotPresent
+      repository: my-second-repository/merchant
+      tag: notaglobaltag
 
     podAnnotations: {}
 

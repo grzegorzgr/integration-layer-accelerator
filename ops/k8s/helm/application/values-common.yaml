@@ -3,6 +3,7 @@
 global:
   tag: "latest"
   replicaCount: 1
+  pullPolicy: IfNotPresent
 
   livenessProbe:
     httpGet:
