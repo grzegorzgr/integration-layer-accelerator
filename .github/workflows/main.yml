@@ -1,4 +1,4 @@
-name: Get pods
+name: Create Namespace
 on: [push]
 
 jobs:
@@ -11,6 +11,6 @@ jobs:
       - uses: actions-hub/kubectl@master
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
-          NAMESPACE: 'accelerator-app'
+          NAMESPACE: ${{ vars.NAMESPACE }}
         with:
           args: create namespace $NAMESPACE --insecure-skip-tls-verify
