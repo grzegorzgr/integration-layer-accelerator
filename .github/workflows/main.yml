@@ -1,5 +1,15 @@
-- uses: actions-hub/kubectl@master
-  env:
-    KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
-  with:
-    args: get nodes
+name: Get pods
+on: [push]
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
+        with:
+          args: get nodes
