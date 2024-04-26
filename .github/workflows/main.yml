@@ -14,7 +14,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Setup Kubernetes
-      uses: Azure/setup-kubectl@3
+      uses: Azure/setup-kubectl@v3
       with:
         version: 'latest'
 
