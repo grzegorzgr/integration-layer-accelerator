@@ -1,21 +1,21 @@
 ### COMMON SETUP
 
-global:
-  tag: "latest"
-  replicaCount: 1
-  pullPolicy: IfNotPresent
+tag: "latest"
+replicaCount: 1
+pullPolicy: IfNotPresent
 
-  livenessProbe:
-    httpGet:
-      path: /
-      port: 80
-      scheme: HTTP
+livenessProbe:
+  httpGet:
+    path: /
+    port: 80
+    scheme: HTTP
 
-  livenessProbeParams:
-    failureThreshold: 3
-    initialDelaySeconds: 60
-    periodSeconds: 15
-    successThreshold: 1
-    timeoutSeconds: 5
+livenessProbeParams:
+  failureThreshold: 3
+  initialDelaySeconds: 60
+  periodSeconds: 15
+  successThreshold: 1
+  timeoutSeconds: 5
 
-  maxSkew: 3
+# Service spread - define how many services of the same app can be hosted by a single kubernetes node
+maxSkew: 3

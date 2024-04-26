@@ -8,9 +8,9 @@ metadata:
   labels:
     managed-by: Helm
     release: {{ $.Release.Name }}
-    version: {{ $.Values.global.tag }}
+    version: {{ $.Values.tag }}
 spec:
-  replicas: {{ $.Values.global.replicaCount }}
+  replicas: {{ $.Values.replicaCount }}
   selector:
     matchLabels:
       managed-by: Helm
@@ -24,12 +24,12 @@ spec:
       labels:
         managed-by: Helm
         release: {{ $.Release.Name }}
-        version: {{ $.Values.global.tag }}
+        version: {{ $.Values.tag }}
     spec:
       containers:
         - name: {{ .name }}
-          image: "{{ .image.repository }}:{{ if .image.tag }}{{ .image.tag}}{{ else }}{{ $.Values.global.tag }}{{ end }}"
-          imagePullPolicy: {{ $.Values.global.pullPolicy }}
+          image: "{{ .image.repository }}:{{ if .image.tag }}{{ .image.tag}}{{ else }}{{ $.Values.tag }}{{ end }}"
+          imagePullPolicy: {{ $.Values.pullPolicy }}
           env: 
 {{ if .extraEnv }}{{ toYaml .extraEnv | indent 10 }}{{ end }}
           ports:
@@ -37,8 +37,8 @@ spec:
               containerPort: {{ .service.port }}
               protocol: TCP
           livenessProbe:
-{{- toYaml $.Values.global.livenessProbe | nindent 12  -}}
-{{ toYaml $.Values.global.livenessProbeParams | nindent 12  }}
+{{- toYaml $.Values.livenessProbe | nindent 12  -}}
+{{ toYaml $.Values.livenessProbeParams | nindent 12  }}
           resources:
             {{- toYaml .resources | nindent 12 }}
           volumeMounts:
