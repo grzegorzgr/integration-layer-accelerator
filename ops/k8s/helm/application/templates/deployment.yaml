@@ -1,0 +1,72 @@
+{{- $outer := . -}}
+{{ range .Values.apps }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .name }}
+  labels:
+    managed-by: Helm
+    release: {{ $.Release.Name }}
+    version: {{ $.Values.global.tag }}
+spec:
+  replicas: {{ $.Values.global.replicaCount }}
+  selector:
+    matchLabels:
+      managed-by: Helm
+      release: {{ $.Release.Name }}
+  template:
+    metadata:
+    {{- with .podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        managed-by: Helm
+        release: {{ $.Release.Name }}
+        version: {{ $.Values.global.tag }}
+    spec:
+      containers:
+        - name: {{ .name }}
+          image: "{{ .image.repository }}:{{ $.Values.global.tag }}"
+          imagePullPolicy: {{ .image.pullPolicy }}
+          env: 
+{{ if .extraEnv }}{{ toYaml .extraEnv | indent 10 }}{{ end }}
+          ports:
+            - name: http
+              containerPort: {{ .service.port }}
+              protocol: TCP
+          livenessProbe:
+{{- toYaml $.Values.global.livenessProbe | nindent 12  -}}
+{{ toYaml $.Values.global.livenessProbeParams | nindent 12  }}
+          resources:
+            {{- toYaml .resources | nindent 12 }}
+          volumeMounts:
+          {{- range .volumes }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+              readOnly: true
+          {{- end }}
+      {{- with .nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      topologySpreadConstraints:
+{{ include "application.topologySpreadConstraints" $outer | indent 6 -}}
+      volumes:
+        {{- range .volumes }}
+        - name: {{ .name }}
+          secret:
+            defaultMode: 420
+            secretName: {{ .secretName }}
+            optional: {{ .optional | default "true" }}
+        {{- end }}
+{{end }}
