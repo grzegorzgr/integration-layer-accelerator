@@ -11,6 +11,6 @@ jobs:
       - uses: actions-hub/kubectl@master
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
-          NAMESPACE: accelerator-app
+          NAMESPACE: 'accelerator-app'
         with:
           args: create namespace $NAMESPACE --insecure-skip-tls-verify
