@@ -2,13 +2,15 @@ name: Deploy
 on:
   push:
     branches:
-      - actions
+      - opsstuff
       - main
 
 jobs:
   deploy:
     name: Deploy
-    runs-on: ubuntu-latest
+    runs-on: arc-runner-set
+    container:
+      image: smartpayimages/jdk-17-slim:technical
 
     steps:
     - name: Checkout
@@ -37,18 +39,22 @@ jobs:
     - name: Update Helm Repositories
       run: |
         helm repo add bitnami https://charts.bitnami.com/bitnami
+        helm repo add confluent https://confluentinc.github.io/cp-helm-charts/
         helm repo update
 
     - name: Deploy Etcd
       run: |
         SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
-        helm install etcd bitnami/etcd --namespace $SHORT_SHA
+        helm install --wait --set persistence.enabled=false etcd-$SHORT_SHA bitnami/etcd --namespace $SHORT_SHA
 
-    - name: echo
-      run: echo $SHORT_SHA
+    - name: Deploy Confluent Kafka, zookeeper and Schema Registry
+      run: |
+        SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+        helm install --wait --set cp-zookeeper.servers=1,cp-zookeeper.persistence.enabled=false,cp-schema-registry.enabled=false,cp-kafka-rest.enabled=false,cp-kafka-connect.enabled=false,cp-kafka.brokers=1,cp-kafka.persistence.enabled=false,cp-ksql-server.enabled=false,cp-control-center.enabled=false confluent-$SHORT_SHA confluent/cp-helm-charts --namespace $SHORT_SHA
 
     - name: Remove apps
       run: |
         SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
-        helm uninstall etcd --namespace $SHORT_SHA 
+        helm uninstall etcd-$SHORT_SHA --namespace $SHORT_SHA
+        helm uninstall confluent-$SHORT_SHA --namespace $SHORT_SHA
         kubectl delete namespace $SHORT_SHA
