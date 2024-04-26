@@ -7,9 +7,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Create namespace
-      - uses: actions/checkout@v1
-      - uses: actions-hub/kubectl@master
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Create Namespace
+        uses: actions-hub/kubectl@master
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
         with:
