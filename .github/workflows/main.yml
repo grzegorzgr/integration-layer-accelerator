@@ -1,4 +1,4 @@
-name: Create Namespace
+name: Deploy
 on: [push]
 
 jobs:
@@ -7,10 +7,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Create namespace
       - uses: actions/checkout@v1
       - uses: actions-hub/kubectl@master
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
-          NAMESPACE: ${{ vars.NAMESPACE }}
         with:
-          args: create namespace $NAMESPACE --insecure-skip-tls-verify
+          args: create namespace accelerator-app --insecure-skip-tls-verify
+
+
