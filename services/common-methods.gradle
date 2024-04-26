@@ -1,0 +1,157 @@
+import java.util.regex.Matcher
+
+static String fixEmailFormat(String line) {
+    return line.contains('DATAFORMAT')
+            ? line.contains('DATAFORMAT:email') ? "@Email(regexp = \".+[@].+[\\\\.].+\")\n" : ""
+            : line
+}
+
+static String fixEnumNameFormat(String line) {
+    return line.contains('ENUM_START')
+            ? line
+            .replaceAll("\\s*ENUM_START", "ENUM_START")
+            .replaceAll("\\s", "_")
+            .replaceAll("-", "_")
+            .replaceAll("\\.", "_")
+            .replaceAll(",", "_")
+            .replaceAll(":", "_")
+            .replaceAll("/", "_")
+            .replaceAll("ENUM_START\"#", "ENUM_START\"_")
+            .replaceAll("ENUM_START\"\"ENUM_END", "ENUM_START\"EMPTY\"ENUM_END")
+            .replaceAll("ENUM_START\"&", "ENUM_START\"AMPE_")
+            .replaceAll("ENUM_START\"!", "ENUM_START\"EXCL_")
+            .replaceAll("ENUM_START\"\\^", "ENUM_START\"CARET_")
+            .replaceAll("ENUM_START\"new", "ENUM_START\"_new")
+            .replaceAll("ENUM_START\"([0-9])", "ENUM_START\"_\$1")
+            .replaceAll("ENUM_START\"", "")
+            .replaceAll("\"ENUM_END", "")
+            : line
+}
+
+static String addJavaxAnnotation(String line) {
+    if (line.contains('@Pattern')) {
+        int startPatternIndex =  line.indexOf("Pattern(regexp=\"")
+        int lastPatternIndex =  line.indexOf("\")")
+        String patternSubstring = line.substring(startPatternIndex, lastPatternIndex) + "\")"
+        String replacement = "@" + patternSubstring + " @javax.validation.constraints." + patternSubstring
+        return line.replaceAll("@Pattern\\(.*\\\"\\)", Matcher.quoteReplacement(replacement))
+    } else if (line.contains('@Size')) {
+        int startPatternIndex =  line.indexOf("Size")
+        int lastPatternIndex =  line.indexOf(")")
+        String patternSubstring = line.substring(startPatternIndex, lastPatternIndex)
+        String replacement =  "@" + patternSubstring + ")" + " @javax.validation.constraints." + patternSubstring + ")";
+        return line.replaceAll("@Size\\([a-z]{3}=\\d+\\)|@Size\\([a-z]{3}=\\d+,[a-z]{3}=\\d+\\)", Matcher.quoteReplacement(replacement))
+    } else if (line.contains('@Min') && line.contains('@Max')) {
+        int firstClosingBracket = line.indexOf(")")
+        int secondClosingBracket = line.indexOf(")", firstClosingBracket + 1)
+        int startMax =  line.indexOf("Max")
+        int startMin =  line.indexOf("Min")
+        int firstAnnotation = startMin < startMax ? startMin : startMax
+        int secondAnnotation = startMin < startMax ? startMax : startMin
+
+        String patternFirstSubstring = line.substring(firstAnnotation, firstClosingBracket)
+        String patternSecondSubstring = line.substring(secondAnnotation, secondClosingBracket)
+        String replacementFirstAnnotation =  "@" + patternFirstSubstring + ")" + " @javax.validation.constraints." + patternFirstSubstring + ")";
+        String replacementSecondAnnotation =  "@" + patternSecondSubstring + ")" + " @javax.validation.constraints." + patternSecondSubstring + ")";
+
+        String newLine = line
+                .replaceAll("@Min\\(\\d+\\)", Matcher.quoteReplacement(replacementFirstAnnotation))
+                .replaceAll("@Max\\(\\d+\\)", Matcher.quoteReplacement(replacementSecondAnnotation))
+        return newLine;
+    } else if (line.contains('@Min')) {
+        int startPatternIndex =  line.indexOf("Min")
+        int lastPatternIndex =  line.indexOf(")")
+        String patternSubstring = line.substring(startPatternIndex, lastPatternIndex)
+        String replacement =  "@" + patternSubstring + ")" + " @javax.validation.constraints." + patternSubstring + ")"
+        return line.replaceAll("@Min\\(\\d+\\)", Matcher.quoteReplacement(replacement))
+    } else if (line.contains('@Max')) {
+        int startPatternIndex =  line.indexOf("Max")
+        int lastPatternIndex =  line.indexOf(")")
+        String patternSubstring = line.substring(startPatternIndex, lastPatternIndex)
+        String replacement =  "@" + patternSubstring + ")" + " @javax.validation.constraints." + patternSubstring + ")"
+        return line.replaceAll("@Max\\(\\d+\\)", Matcher.quoteReplacement(replacement))
+    } else if (line.contains('@Email')) {
+        int startPatternIndex =  line.indexOf("Email")
+        int lastPatternIndex =  line.indexOf(")")
+        String patternSubstring = line.substring(startPatternIndex, lastPatternIndex)
+        String replacement =  "@" + patternSubstring + ")" + " @javax.validation.constraints." + patternSubstring + ")"
+        return line.replaceAll("@Email\\(.*\\\"\\)", Matcher.quoteReplacement(replacement))
+    } else if (line.contains('@NotNull')) {
+        String replacement =  "@NotNull" + " @javax.validation.constraints.NotNull"
+        return line.replaceAll("@NotNull", Matcher.quoteReplacement(replacement))
+    } else {
+        return line;
+    }
+}
+
+static String fixEnumNameReportsFormat(String line) {
+    return line.contains('ENUM_START')
+            ? line
+            .replaceAll("\\s*ENUM_START", "ENUM_START")
+            .replaceAll("\\s", "_")
+            .replaceAll("-", "_")
+            .replaceAll("\\.", "_")
+            .replaceAll(",", "_")
+            .replaceAll(":", "_")
+            .replaceAll("/", "_")
+            .replaceAll("ENUM_START\"#", "ENUM_START\"_")
+            .replaceAll("ENUM_START\"\"ENUM_END", "ENUM_START\"EMPTY\"ENUM_END")
+            .replaceAll("ENUM_START\"&", "ENUM_START\"_")
+            .replaceAll("ENUM_START\"!", "ENUM_START\"_")
+            .replaceAll("ENUM_START\"\\^", "ENUM_START\"_")
+            .replaceAll("ENUM_START\"new", "ENUM_START\"_new")
+            .replaceAll("ENUM_START\"([0-9])", "ENUM_START\"_\$1")
+            .replaceAll("ENUM_START\"", "")
+            .replaceAll("\"ENUM_END", "")
+            : line
+}
+
+Closure getSwaggerSourceConfiguration(file, modelPackage, buildDir, validation) {
+    { ->
+        inputFile = file
+        code {
+            language = 'spring'
+            components = [models: true, modelDocs: false]
+            additionalProperties = [
+                    'templateDir': "templates",
+                    'java8': true,
+                    'modelPackage': modelPackage,
+                    'dateLibrary': 'java8',
+                    'useNullForUnknownEnumValue': false,
+                    'jakarta': true, // needed for swagger-codegen-cli
+                    'useJakartaEe': true // needed for openapi-generator-cli
+            ]
+            dependsOn validation
+        }
+    }
+}
+
+Closure getSwaggerSourceConfigurationSerializableModel(file, modelPackage, buildDir, validation) {
+    { ->
+        inputFile = file
+        code {
+            language = 'spring'
+            components = [models: true, modelDocs: false]
+            additionalProperties = [
+                    'templateDir': "templates",
+                    'java8': true,
+                    'modelPackage': modelPackage,
+                    'dateLibrary': 'java8',
+                    'useNullForUnknownEnumValue': false,
+                    'serializableModel' : true,
+                    'jakarta': true, // needed for swagger-codegen-cli
+                    'useJakartaEe': true // needed for openapi-generator-cli
+            ]
+            dependsOn validation
+        }
+    }
+}
+
+ext {
+    addJavaxAnnotation = this.&addJavaxAnnotation
+    fixEmailFormat = this.&fixEmailFormat
+    fixEnumNameFormat = this.&fixEnumNameFormat
+    fixEnumNameReportsFormat = this.&fixEnumNameReportsFormat
+    getSwaggerSourceConfiguration = this.&getSwaggerSourceConfiguration
+    getSwaggerSourceConfigurationSerializableModel = this.&getSwaggerSourceConfigurationSerializableModel
+}

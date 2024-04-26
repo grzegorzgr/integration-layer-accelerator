@@ -1,0 +1,14 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'helm-accelerator'
+include ':api-gateway'
+include ':avro-schemas'
+include ':error-handling'
+include ':demo'
+
+project(":avro-schemas").projectDir = file("./libs/avro-schemas")

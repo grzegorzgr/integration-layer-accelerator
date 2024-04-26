@@ -1,0 +1,199 @@
+buildscript {
+    dependencies {
+        classpath 'org.owasp:dependency-check-gradle:8.2.1'
+    }
+}
+
+plugins {
+    id "com.github.spotbugs" version "5.0.14"
+    id "io.freefair.lombok" version "8.0.1"
+    id "io.spring.dependency-management" version "1.0.11.RELEASE"
+    id "checkstyle"
+}
+
+apply from: "versions.gradle"
+apply from: "common-methods.gradle"
+apply plugin: 'java'
+apply plugin: 'org.owasp.dependencycheck'
+apply plugin: 'jacoco'
+
+repositories {
+    mavenCentral()
+}
+
+def jacocoExcludes = [
+        '**/properties/**',
+        '**/model/**',
+        "**/*Properties*",
+        "**/*Application*",
+        "**/*Config*",
+        "**/gateway/api/**",
+]
+
+subprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url 'https://plugins.gradle.org/m2/' }
+        maven { url 'https://packages.confluent.io/maven/' }
+    }
+
+    buildscript {
+        repositories {
+            mavenCentral()
+            maven { url 'https://plugins.gradle.org/m2/' }
+        }
+    }
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: "com.github.spotbugs"
+    apply plugin: 'checkstyle'
+    apply plugin: 'project-report'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'jacoco'
+    apply plugin: 'io.freefair.lombok'
+
+    jacoco {
+        toolVersion = "0.8.10"
+    }
+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    tasks.withType(Test) {
+        reports.html.required = true
+        systemProperty "file.encoding", "utf-8"
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${SPRING_CLOUD_DEPENDENCIES_VERSION}"
+            mavenBom "org.springframework.boot:spring-boot-dependencies:${SPRING_BOOT_VERSION}"
+        }
+    }
+
+    tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
+        excludeFilter = rootProject.file('config/spotbugs/exclude.xml')
+        reports {
+            xml.required = true
+            html.required = false
+        }
+    }
+
+    test {
+        maxParallelForks = Runtime.runtime.availableProcessors() / 2
+        filter {
+            includeTestsMatching "*Test"
+            includeTestsMatching "*IT"
+        }
+    }
+
+    // This exclusion guarantees that inner classes inside classes ending with "Test" or "IT" are not scanned for
+    // test methods (annotated by @Test)
+    tasks.withType(Test) {
+        exclude "**/*\$*.class"
+    }
+
+    task jacocoIntegrationTestReport(type: JacocoReport) {
+        executionData.from = fileTree(buildDir).include("/jacoco/integrationTest.exec")
+        sourceDirectories.from = sourceSets.main.allSource.srcDirs
+        classDirectories.from = sourceSets.main.output
+    }
+
+    jacocoTestReport {
+        reports{
+            html.required = true
+            xml.required = true
+        }
+
+        afterEvaluate {
+            getClassDirectories().setFrom(classDirectories.files.collect {
+                fileTree(dir: it, exclude: jacocoExcludes)
+            })
+        }
+
+        sourceDirectories.from = sourceSets.main.allSource.srcDirs
+        classDirectories.from = sourceSets.main.output
+    }
+
+    jacocoTestCoverageVerification {
+        afterEvaluate {
+            getClassDirectories().setFrom(classDirectories.files.collect {
+                fileTree(dir: it, exclude: jacocoExcludes)
+            })
+        }
+
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.1
+                }
+            }
+        }
+    }
+
+    task testWithCoverage() {
+        group = 'verification'
+        dependsOn test, jacocoTestReport
+        finalizedBy jacocoTestCoverageVerification
+    }
+
+    jacocoTestReport.mustRunAfter test
+    jacocoTestCoverageVerification.mustRunAfter jacocoTestReport
+
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    }
+
+    sourceSets {
+        integrationTest {
+            java {
+                compileClasspath += main.output + test.output
+                runtimeClasspath += main.output + test.output
+                srcDir file('src/integration-test/java')
+            }
+
+            resources {
+                srcDir file('src/integration-test/resources')
+            }
+        }
+    }
+
+    configurations {
+        integrationTestCompileOnly.extendsFrom testCompileOnly
+        integrationTestImplementation.extendsFrom testImplementation
+        integrationTestRuntime.extendsFrom testRuntime
+        integrationTestAnnotationProcessor.extendsFrom testAnnotationProcessor
+    }
+
+    task integrationTest(type: Test) {
+        testClassesDirs = sourceSets.integrationTest.output.classesDirs
+        classpath = sourceSets.integrationTest.runtimeClasspath
+        outputs.upToDateWhen { false }
+    }
+
+    check.dependsOn integrationTest
+    integrationTest.mustRunAfter test
+}
+
+task jacocoRootReport(type: JacocoReport) {
+    afterEvaluate {
+        getClassDirectories().setFrom(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        })
+    }
+
+    additionalSourceDirs.from = files(subprojects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories.from = files(subprojects.sourceSets.main.allSource.srcDirs)
+    classDirectories.from =  files(subprojects.sourceSets.main.output)
+    executionData.setFrom project.fileTree(dir: '.', include: '**/build/jacoco/test.exec')
+
+    reports {
+        html.required = true
+    }
+}
