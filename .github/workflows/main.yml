@@ -1,0 +1,5 @@
+- uses: actions-hub/kubectl@master
+  env:
+    KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
+  with:
+    args: get nodes
