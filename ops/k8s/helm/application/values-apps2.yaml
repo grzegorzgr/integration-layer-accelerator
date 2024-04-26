@@ -4,10 +4,10 @@ apps:
 ###################################
 ####### API-GATEWAY APP ###########
 ###################################
-  apigateway:
-    name: api-gateway
+  document:
+    name: document
     image:
-      repository: my-first-repository/api-gateway
+      repository: document
       # tag: notaglobaltag
 
     podAnnotations: {}
@@ -28,16 +28,11 @@ apps:
       #   cpu: 100m
       #   memory: 128Mi
 
-    volumes:
-      - name: server-certs
-        secretName: api-gateway
-        mountPath: /opt/certs/api-gateway
-        optional: false
-      - name: mtls-certs2
-        secretName: mtls-certs2
-        mountPath: /opt/certs/mtls2
-        optional: true
-
+    volumes: []
+      # - name: server-certs
+      #   secretName: api-gateway
+      #   mountPath: /opt/certs/api-gateway
+      #   optional: false
 
     autoscaling:
       enabled: false
@@ -69,6 +64,13 @@ apps:
     extraEnv: []
     # - name: DUMMY_ENV
     #   value: "abc123"
+
+    ### TODO - customized envFrom to load values for etcd and kafka on-demand
+    # dependencies:
+    #   - kafka
+    #   - etcd
+
+    ###
 
     resources:
       # limits:

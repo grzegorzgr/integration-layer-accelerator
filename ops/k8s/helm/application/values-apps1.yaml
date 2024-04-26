@@ -1,0 +1,51 @@
+##### APPLICATIONS
+
+apps:
+###################################
+####### API-GATEWAY APP ###########
+###################################
+  apigateway:
+    name: api-gateway
+    image:
+      repository: my-first-repository/api-gateway
+      # tag: notaglobaltag
+
+    podAnnotations: {}
+
+    service:
+      type: NodePort
+      port: 8080
+
+    extraEnv:
+    - name: MERCHANT_URL
+      value: "https://merchant-svc:8080"
+
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1024Mi
+      requests:
+        cpu: 1000m
+        memory: 1536Mi
+
+    volumes:
+      - name: server-certs
+        secretName: api-gateway
+        mountPath: /opt/certs/api-gateway
+        optional: false
+      - name: mtls-certs2
+        secretName: mtls-certs2
+        mountPath: /opt/certs/mtls2
+        optional: true
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 6
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+
+    imagePullSecrets: []
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
