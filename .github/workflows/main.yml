@@ -6,31 +6,18 @@ on:
 
 jobs:
   deploy:
+    name: Deploy
     runs-on: [arc-runner-set]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      - name: Set up Kubectl
-        uses: azure/setup-kubectl@v1
 
-      - name: Configure Kubeconfig
-        uses: azure/k8s-set-context@v1
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
 
       - name: Create Namespace
-        run: |
-          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
-          kubectl create namespace $SHORT_SHA
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        with:
+          args: create namespace accelerator-app --insecure-skip-tls-verify
 
-      - name: Add Helm repo
-        run: |
-          helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm repo update
 
-      - name: Deploy etcd
-        run: |
-          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
-          helm install etcd bitnami/etcd --namespace $SHORT_SHA
