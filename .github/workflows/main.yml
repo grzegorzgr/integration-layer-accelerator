@@ -45,15 +45,28 @@ jobs:
     - name: Deploy Etcd
       run: |
         SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        helm install --wait --set persistence.enabled=false etcd-$SHORT_SHA bitnami/etcd --namespace $SHORT_SHA
+        helm upgrade --install --wait --set persistence.enabled=false etcd-$SHORT_SHA bitnami/etcd --namespace $SHORT_SHA
 
-    # - name: Deploy Confluent Kafka, zookeeper and Schema Registry
-    #   run: |
-    #     SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-    #     helm install --wait --set cp-zookeeper.servers=1,cp-zookeeper.persistence.enabled=false,cp-schema-registry.enabled=false,cp-kafka-rest.enabled=false,cp-kafka-connect.enabled=false,cp-kafka.brokers=1,cp-kafka.persistence.enabled=false,cp-ksql-server.enabled=false,cp-control-center.enabled=false confluent-$SHORT_SHA confluent/cp-helm-charts --namespace $SHORT_SHA
+    - name: Create Kafka certs
+      run: |
+        SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+        kubectl -n $SHORT_SHA create secret generic kafka \
+        --from-file=keystore=ops/tls/kafka/broker.keystore.jks \
+        --from-file=truststore=ops/tls/kafka/broker.truststore.jks \
+        --from-file=keycredential=ops/tls/kafka/keycredential \
+        --save-config --dry-run=true -o yaml | kubectl apply -f -
+
+    - name: Deploy Confluent Kafka, zookeeper and Schema Registry
+      run: |
+        SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+        helm upgrade --install --wait --namespace $SHORT_SHA \
+        --set cp-kafka.fullnameOverride=kafka-$SHORT_SHA \
+        --values ./ops/k8s/helm/kafka/values.yaml kafka-$SHORT_SHA ./ops/k8s/helm/kafka
 
     - name: Remove apps
       run: |
         SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        helm uninstall etcd-$SHORT_SHA --namespace $SHORT_SHA
+        sleep 300
+        kubectl get po -n $SHORT_SHA
+        helm uninstall etcd-$SHORT_SHA kafka-$SHORT_SHA --namespace $SHORT_SHA
         kubectl delete namespace $SHORT_SHA

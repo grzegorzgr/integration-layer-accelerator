@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "cp-kafka.fullname" . }}-headless
+  labels:
+    app: {{ template "cp-kafka.name" . }}
+    chart: {{ template "cp-kafka.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  ports:
+    - port: 9092
+      name: broker
+    - port: 9093
+      name: broker-ssl
+  clusterIP: None
+  selector:
+    app: {{ template "cp-kafka.name" . }}
+    release: {{ .Release.Name }}

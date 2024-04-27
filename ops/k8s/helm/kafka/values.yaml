@@ -1,0 +1,92 @@
+## ------------------------------------------------------
+## Zookeeper
+## ------------------------------------------------------
+cp-zookeeper:
+  enabled: true
+  servers: 1
+  image: confluentinc/cp-zookeeper
+  imageTag: 5.5.1
+  ## Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace.
+  ## https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
+  imagePullSecrets:
+  #  - name: "regcred"
+  heapOptions: "-Xmx512m -Xms512m"
+  persistence:
+    enabled: false
+    ## The size of the PersistentVolume to allocate to each Zookeeper Pod in the StatefulSet. For
+    ## production servers this number should likely be much larger.
+    ##
+    ## Size for Data dir, where ZooKeeper will store the in-memory database snapshots.
+    dataDirSize: 2Gi
+    # dataDirStorageClass: ""
+
+    ## Size for data log dir, which is a dedicated log device to be used, and helps avoid competition between logging and snaphots.
+    dataLogDirSize: 2Gi
+    # dataLogDirStorageClass: ""
+  resources:
+    limits:
+      cpu: 750
+      memory: 768Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  prometheus:
+    jmx:
+      enabled: false
+
+## ------------------------------------------------------
+## Kafka
+## ------------------------------------------------------
+cp-kafka:
+  enabled: true
+  brokers: 1
+  image: confluentinc/cp-kafka
+  imageTag: 5.5.1
+  ## Optionally specify an array of imagePullSecrets. Secrets must be manually created in the namespace.
+  ## https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
+  imagePullSecrets:
+  #  - name: "regcred"
+  heapOptions: "-Xmx1G -Xms1G"
+  persistence:
+    enabled: false
+    # storageClass: ""
+    size: 3Gi
+    disksPerBroker: 0
+  nodeport:
+    enabled: true
+  resources:
+    limits:
+      memory: 2Gi
+    requests:
+      cpu: 1
+      memory: 1536Mi
+  prometheus:
+    jmx:
+      enabled: false
+  configurationOverrides:
+    "offsets.topic.replication.factor": "1"
+  ssl:
+    enabled: true
+    env:
+      KAFKA_SSL_KEYSTORE_FILENAME: keystore.jks
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: keycredential
+      KAFKA_SSL_TRUSTSTORE_FILENAME: truststore.jks
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: keycredential
+      KAFKA_SSL_KEY_CREDENTIALS: keycredential
+      KAFKA_MESSAGE_MAX_BYTES: "5242940"
+    volumeMounts: 
+      - name: kafka-certs
+        mountPath: '/etc/kafka/secrets'
+        readOnly: true
+
+    volumes: 
+      - name: kafka-certs
+        secret:
+          secretName: kafka
+          items:
+          - key: keystore
+            path: keystore.jks
+          - key: truststore
+            path: truststore.jks
+          - key: keycredential
+            path: keycredential
