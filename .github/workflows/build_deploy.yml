@@ -147,17 +147,8 @@ jobs:
         --set cp-kafka.fullnameOverride=kafka-$SHORT_SHA \
         --values ./ops/k8s/helm/kafka/values.yaml kafka-$SHORT_SHA ./ops/k8s/helm/kafka
 
-    - name: Remove apps
-      run: |
-        SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        sleep 300
-        kubectl get po -n $SHORT_SHA
-        helm uninstall etcd-$SHORT_SHA kafka-$SHORT_SHA --namespace $SHORT_SHA
-        kubectl delete namespace $SHORT_SHA
-
-
   cleanup:
-    name: Deploy
+    name: Cleanup
     needs: [build-and-push, setup-workspace, deploy-etcd, deploy-kafka]
     runs-on: arc-runner-set
     container:
