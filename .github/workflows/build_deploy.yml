@@ -7,6 +7,7 @@ on:
 
 jobs:
   build-and-push:
+    name: Compile, build and push docker images
     runs-on: ubuntu-latest
     steps:
       # - name: Set up QEMU
@@ -64,7 +65,7 @@ jobs:
           kubectl create namespace $SHORT_SHA
 
   deploy-etcd:
-      name: Deploy
+      name: Deploy ETCD (bitnami)
       needs: [build-and-push, setup-workspace]
       runs-on: arc-runner-set
       container:
@@ -100,7 +101,7 @@ jobs:
           helm upgrade --install --wait --set persistence.enabled=false etcd-$SHORT_SHA bitnami/etcd --namespace $SHORT_SHA
 
   deploy-kafka:
-    name: Deploy
+    name: Deploy Confluent Kafka (custom)
     needs: [build-and-push, setup-workspace]
     runs-on: arc-runner-set
     container:
