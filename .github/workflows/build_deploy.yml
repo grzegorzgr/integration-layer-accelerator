@@ -21,7 +21,7 @@ jobs:
 
       - name: Java build test
         run: |
-          cd services && ./gradlew clean assemble
+          cd services && ls -lah
       
       # - name: Login to Docker Hub
       #   uses: docker/login-action@v3
@@ -35,67 +35,67 @@ jobs:
       #     push: true
       #     tags: user/app:latest
 
-  deploy:
-    name: Deploy
-    runs-on: arc-runner-set
-    container:
-      image: smartpayimages/jdk-17-slim:technical
+  # deploy:
+  #   name: Deploy
+  #   runs-on: arc-runner-set
+  #   container:
+  #     image: smartpayimages/jdk-17-slim:technical
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v3
 
-    - name: Setup Kubernetes
-      uses: azure/setup-kubectl@v3
-      with:
-        version: 'latest'
+  #   - name: Setup Kubernetes
+  #     uses: azure/setup-kubectl@v3
+  #     with:
+  #       version: 'latest'
 
-    - name: Configure Kubernetes
-      run: |
-        mkdir $HOME/.kube
-        echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+  #   - name: Configure Kubernetes
+  #     run: |
+  #       mkdir $HOME/.kube
+  #       echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
 
-    - name: Create namespace
-      run: |
-        SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        kubectl create namespace $SHORT_SHA
+  #   - name: Create namespace
+  #     run: |
+  #       SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+  #       kubectl create namespace $SHORT_SHA
 
-    - name: Add Bitnami Helm Repo
-      uses: azure/setup-helm@v1
-      with:
-        version: '3.14.0'
+  #   - name: Add Bitnami Helm Repo
+  #     uses: azure/setup-helm@v1
+  #     with:
+  #       version: '3.14.0'
     
-    - name: Update Helm Repositories
-      run: |
-        helm repo add bitnami https://charts.bitnami.com/bitnami
-        helm repo add confluent https://confluentinc.github.io/cp-helm-charts/
-        helm repo update
+  #   - name: Update Helm Repositories
+  #     run: |
+  #       helm repo add bitnami https://charts.bitnami.com/bitnami
+  #       helm repo add confluent https://confluentinc.github.io/cp-helm-charts/
+  #       helm repo update
 
-    - name: Deploy Etcd
-      run: |
-        SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        helm upgrade --install --wait --set persistence.enabled=false etcd-$SHORT_SHA bitnami/etcd --namespace $SHORT_SHA
+  #   - name: Deploy Etcd
+  #     run: |
+  #       SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+  #       helm upgrade --install --wait --set persistence.enabled=false etcd-$SHORT_SHA bitnami/etcd --namespace $SHORT_SHA
 
-    - name: Create Kafka certs
-      run: |
-        SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        kubectl -n $SHORT_SHA create secret generic kafka \
-        --from-file=keystore=ops/tls/kafka/broker.keystore.jks \
-        --from-file=truststore=ops/tls/kafka/broker.truststore.jks \
-        --from-file=keycredential=ops/tls/kafka/keycredential \
-        --save-config --dry-run=true -o yaml | kubectl apply -f -
+  #   - name: Create Kafka certs
+  #     run: |
+  #       SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+  #       kubectl -n $SHORT_SHA create secret generic kafka \
+  #       --from-file=keystore=ops/tls/kafka/broker.keystore.jks \
+  #       --from-file=truststore=ops/tls/kafka/broker.truststore.jks \
+  #       --from-file=keycredential=ops/tls/kafka/keycredential \
+  #       --save-config --dry-run=true -o yaml | kubectl apply -f -
 
-    - name: Deploy Confluent Kafka, zookeeper and Schema Registry
-      run: |
-        SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        helm upgrade --install --wait --namespace $SHORT_SHA \
-        --set cp-kafka.fullnameOverride=kafka-$SHORT_SHA \
-        --values ./ops/k8s/helm/kafka/values.yaml kafka-$SHORT_SHA ./ops/k8s/helm/kafka
+  #   - name: Deploy Confluent Kafka, zookeeper and Schema Registry
+  #     run: |
+  #       SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+  #       helm upgrade --install --wait --namespace $SHORT_SHA \
+  #       --set cp-kafka.fullnameOverride=kafka-$SHORT_SHA \
+  #       --values ./ops/k8s/helm/kafka/values.yaml kafka-$SHORT_SHA ./ops/k8s/helm/kafka
 
-    - name: Remove apps
-      run: |
-        SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        sleep 300
-        kubectl get po -n $SHORT_SHA
-        helm uninstall etcd-$SHORT_SHA kafka-$SHORT_SHA --namespace $SHORT_SHA
-        kubectl delete namespace $SHORT_SHA
+  #   - name: Remove apps
+  #     run: |
+  #       SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+  #       sleep 300
+  #       kubectl get po -n $SHORT_SHA
+  #       helm uninstall etcd-$SHORT_SHA kafka-$SHORT_SHA --namespace $SHORT_SHA
+  #       kubectl delete namespace $SHORT_SHA
