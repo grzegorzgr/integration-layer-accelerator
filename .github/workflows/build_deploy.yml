@@ -143,7 +143,7 @@ jobs:
     - name: Deploy Confluent Kafka, zookeeper and Schema Registry
       run: |
         SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        KAFKA_PORT="echo $(shuf -i 30000-32767 -n 1)"
+        KAFKA_PORT=$(shuf -i 30000-32767 -n 1)
         KAFKA_LISTENER="EXTERNAL://192.168.1.112:${KAFKA_PORT}"
         helm upgrade --install --namespace $SHORT_SHA \
         --set "cp-kafka.fullnameOverride=kafka-$SHORT_SHA,cp-kafka.nodeport.firstListenerPort=$KAFKA_PORT,cp-kafka.configurationOverrides.advertised\\.listeners=${KAFKA_LISTENER}" \
