@@ -143,8 +143,9 @@ jobs:
     - name: Deploy Confluent Kafka, zookeeper and Schema Registry
       run: |
         SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+        KAFKA_PORT="echo $(shuf -i 30000-32767 -n 1)"
         helm upgrade --install --wait --namespace $SHORT_SHA \
-        --set cp-kafka.fullnameOverride=kafka-$SHORT_SHA \
+        --set cp-kafka.fullnameOverride=kafka-$SHORT_SHA,cp-kafka.nodeport.firstListenerPort=$KAFKA_PORT,cp-kafka.configurationOverrides.'advertised\\.listeners'=$KAFKA_LISTENER \
         --values ./ops/k8s/helm/kafka/values.yaml kafka-$SHORT_SHA ./ops/k8s/helm/kafka
 
   cleanup:
