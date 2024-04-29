@@ -1,0 +1,87 @@
+url:
+  service:
+    error-handling: http://localhost:10001
+    demo: http://localhost:10002
+
+api-gateway:
+  key-store: classpath:api-gateway.jks
+  key-password: changeit
+  key-store-password: changeit
+
+management:
+  endpoint:
+    restart:
+      enabled: true
+    health:
+      enabled: true
+    info:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  info.env.enabled: true
+
+server:
+  port: 8080
+  ssl:
+    enabled: false
+    key-store-password: devApgwPwd
+    key-store: classpath:api-gateway-secured-dev-crt.p12
+    key-store-type: PKCS12
+    trust-store: classpath:inla-dev-ca-crt.p12
+    trust-store-password: devCaPwd
+    ### want - validate client but do not drop connection; need - full mtls
+    client-auth: want
+
+spring:
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      httpclient:
+        pool:
+          max-idle-time: 180000
+        ssl:
+          key-store: ${api-gateway.key-store}
+          key-password: ${api-gateway.key-password}
+          key-store-password: ${api-gateway.key-store-password}
+          useInsecureTrustManager: true
+      default-filters:
+        - PreGatewayHeaderOrchestratorFilter
+      routes:
+        - id: example-post
+          uri: ${url.service.demo}
+          predicates:
+            - Path=/pets
+            - Method=POST
+          filters:
+            - PrefixPathWhenNeeded
+
+        - id: example-get
+          uri: ${url.service.demo}
+          predicates:
+            - Path=/pets
+            - Method=GET
+          filters:
+            - PrefixPathWhenNeeded
+
+        - id: stopped-consumers
+          uri: ${url.service.error-handling}
+          predicates:
+            - Path=/operations-service/paused-consumers
+            - Method=GET
+
+        - id: resume-all-consumers
+          uri: ${url.service.error-handling}
+          predicates:
+            - Path=/operations-service/paused-consumers/resume
+            - Method=POST
+
+logging.level.root: INFO
+
+spring.application.name: api-gateway
+spring.main.allow-bean-definition-overriding: true
+spring.main.allow-circular-references: true
+
+
