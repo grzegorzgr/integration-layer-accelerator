@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: demo
+
+logging:
+  # output: json
+  level:
+    org.zalando.logbook: TRACE
+
+
+petstore:
+  url: http://localhost:8083
+
+management:
+  endpoint:
+    restart:
+      enabled: true
+    health:
+      enabled: true
+    info:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"

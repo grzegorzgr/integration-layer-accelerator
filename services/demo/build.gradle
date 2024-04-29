@@ -1,0 +1,27 @@
+buildscript {
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${SPRING_BOOT_VERSION}")
+    }
+}
+
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+    implementation project(":api-models")
+
+    implementation "io.micrometer:micrometer-registry-prometheus"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+
+    implementation "org.springframework.boot:spring-boot-starter"
+    implementation "io.github.openfeign:feign-httpclient:${FEIGN_HTTP_CLIENT_VERSION}"
+    implementation "org.springframework.cloud:spring-cloud-dependencies:${SPRING_CLOUD_DEPENDENCIES_VERSION}"
+    implementation "org.springframework.cloud:spring-cloud-starter-openfeign:${SPRING_CLOUD_OPENFEIGN_VERSION}"
+
+
+    testImplementation "junit:junit"
+    testImplementation "org.assertj:assertj-core"
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "io.rest-assured:rest-assured"
+}
