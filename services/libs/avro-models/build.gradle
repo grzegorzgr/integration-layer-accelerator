@@ -1,0 +1,31 @@
+import com.github.davidmc24.gradle.plugin.avro.GenerateAvroJavaTask
+
+plugins {
+    id "com.github.davidmc24.gradle.plugin.avro" version "${DAVIDMC24_GRADLE_PLUGIN_AVRO_VERSION}"
+}
+
+apply plugin: "com.github.davidmc24.gradle.plugin.avro-base"
+apply plugin: "java-library"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api project(":avro-schemas")
+}
+
+task regenerateAvro(type: JavaExec) {
+    mainClass = "com.kainos.avro.Generator"
+    classpath = configurations.compileClasspath
+}
+
+task generateAvroPojos(type: GenerateAvroJavaTask) {
+    source("../avro-schemas/src/main/avro")
+    outputDir = file("build/avro-pojos")
+}
+
+compileJava.dependsOn generateAvroPojos
+generateAvroPojos.dependsOn regenerateAvro
+
+sourceSets.main.java.srcDir generateAvroPojos.outputs

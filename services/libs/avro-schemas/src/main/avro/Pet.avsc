@@ -1,0 +1,31 @@
+{
+  "type": "record",
+  "name": "Pet",
+  "namespace": "com.kainos.petstore.avro",
+  "fields": [
+    {
+      "name": "id",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null
+    },
+    {
+      "name": "name",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null
+    },
+    {
+      "name": "tag",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null
+    }
+  ]
+}

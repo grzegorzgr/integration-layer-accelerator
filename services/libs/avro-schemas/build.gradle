@@ -1,0 +1,10 @@
+apply plugin: "java-library"
+
+dependencies {
+    api project(":api-models")
+
+    api "com.google.code.gson:gson"
+    api "org.apache.commons:commons-collections4:${APACHE_COMMONS_COLLECTIONS4_VERSION}"
+    api "com.google.code.findbugs:annotations:${GOOGLE_CODE_FINDBUGS_ANNOTATIONS_VERSION}"
+    api "org.apache.avro:avro:${APACHE_AVRO_VERSION}"
+}
