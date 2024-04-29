@@ -7,8 +7,10 @@ pluginManagement {
 
 rootProject.name = 'helm-accelerator'
 include ':api-gateway'
+include ':api-models'
 include ':avro-schemas'
-include ':error-handling'
 include ':demo'
+include ':error-handling'
 
+project(":api-models").projectDir = file("./libs/api-models")
 project(":avro-schemas").projectDir = file("./libs/avro-schemas")

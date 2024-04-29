@@ -1,0 +1,56 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
+plugins {
+    id 'org.openapi.generator' version "${OPENAPI_GENERATOR_CLI_VERSION}"
+}
+apply plugin: "java-library"
+
+dependencies {
+    implementation "io.swagger.core.v3:swagger-annotations:${SWAGGER_CORE_V3_ANNOTATIONS_VERSION}"
+    api "io.swagger:swagger-annotations:${SWAGGER_ANNOTATIONS_VERSION}"
+    api "com.fasterxml.jackson.core:jackson-annotations"
+    api "org.springframework:spring-context"
+    api "org.openapitools:jackson-databind-nullable:${OPENAPI_JACKSON_DATABIND_NULLABLE_VERSION}"
+    api "jakarta.validation:jakarta.validation-api"
+    api "jakarta.xml.bind:jakarta.xml.bind-api:${JAKARTA_XML_BIND_API_VERSION}"
+    api "jakarta.annotation:jakarta.annotation-api"
+}
+
+def openApiYamlNames = [
+        // In order to add another OpenAPI 3.0 Contract simply append another record after comma
+        [file: "Petstore", model: "com.kainos.petstore.model"]
+]
+
+openApiYamlNames.each {
+    String taskName = "openApiGenerate_" + it.file
+    String file = it.file
+    String model = it.model
+    task(taskName, type: GenerateTask) {
+        inputSpec = "$projectDir/$file"+".oas3.yml"
+        outputDir = "$buildDir/generated-src"
+        generatorName = "java"
+        modelPackage = model.toString()
+        configOptions = [
+                additionalModelTypeAnnotations: '@org.springframework.validation.annotation.Validated',
+                useJakartaEe                  : 'true',
+                useBeanValidation             : 'true',
+                dateLibrary                   : 'custom',
+                java8                         : 'true',
+                serializableModel             : 'true',
+                library                       : 'resttemplate'
+        ]
+        globalProperties = [
+                models    : '',
+                modelTests: 'false'
+        ]
+        typeMappings = [
+                "Date": "LocalDate"
+        ]
+        importMappings = [
+                "Date": "java.time.LocalDate"
+        ]
+    }
+    compileJava.dependsOn(taskName)
+}
+
+sourceSets.main.java.srcDir "$buildDir/generated-src/src/main/java"
