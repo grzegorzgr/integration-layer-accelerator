@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.kainos.avro.conversion.LocalDateTimeConversion;
+import com.kainos.avro.source.ErrorEvent;
 import com.kainos.petstore.model.Pet;
 
 import org.apache.avro.reflect.ReflectData;
@@ -25,13 +26,15 @@ import static java.util.Map.ofEntries;
 
 public class Generator {
     private static final String AVRO_LIBS_DIR = "../avro-schemas/src/main/avro/";
+    private static final String COMMON_AVRO = "com.kainos.common.avro";
     private static final String ENUM_WITH_NAMESPACE_REGEXP = "(\"type\":\"enum\",\"name\":\"[\\w\\d]+\",\"namespace\":\")([\\w\\d.]+)(\")";
 
     public static void main(String[] args) {
         ReflectData reflectData = getReflectData();
 
         Map<Class, String> sourcePojos = ofEntries(
-            entry(Pet.class, "Pet.avsc")
+            entry(Pet.class, "Pet.avsc"),
+            entry(ErrorEvent.class, "ErrorEvent.avsc")
         );
 
         clearDirectory(AVRO_LIBS_DIR);
@@ -79,6 +82,7 @@ public class Generator {
         String businessPartnerSchema = reflectData.getSchema(type).toString();
         return businessPartnerSchema
             .replaceAll(ENUM_WITH_NAMESPACE_REGEXP, "$1$2Enums$3")
+            .replace("com.kainos.avro.source", COMMON_AVRO)
             .replace("com.kainos.petstore.model", "com.kainos.petstore.avro");
     }
 

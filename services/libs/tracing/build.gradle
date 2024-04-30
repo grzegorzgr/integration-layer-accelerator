@@ -1,0 +1,18 @@
+apply plugin: "java-library"
+
+dependencies {
+    api project(":model-mapper")
+
+    api 'org.springframework.boot:spring-boot-starter-aop'
+    api "org.springframework.boot:spring-boot-starter-web"
+    api 'org.springframework.boot:spring-boot-starter-actuator'
+
+    api "org.apache.commons:commons-lang3"
+    api "org.springframework.kafka:spring-kafka"
+    api "net.logstash.logback:logstash-logback-encoder:${LOGSTASH_LOGBACK_ENCODER_VERSION}"
+    api "jakarta.validation:jakarta.validation-api"
+
+    api platform('io.micrometer:micrometer-tracing-bom:latest.release')
+    api 'io.micrometer:micrometer-tracing'
+    api 'io.micrometer:micrometer-tracing-bridge-brave'
+}

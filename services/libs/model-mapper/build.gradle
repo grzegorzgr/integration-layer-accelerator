@@ -1,0 +1,9 @@
+apply plugin: "java-library"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.apache.commons:commons-collections4:${APACHE_COMMONS_COLLECTIONS4_VERSION}"
+}

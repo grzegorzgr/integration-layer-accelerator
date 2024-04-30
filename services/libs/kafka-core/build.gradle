@@ -1,0 +1,24 @@
+apply plugin: "java-library"
+
+repositories {
+    mavenCentral()
+    maven { url 'https://plugins.gradle.org/m2/' }
+    maven { url 'https://packages.confluent.io/maven/' }
+}
+
+dependencies {
+    api project(":tracing")
+    api project(":logging")
+    api project(":avro-models")
+    api project(":model-mapper")
+
+    api "org.springframework:spring-web"
+    api "org.springframework.boot:spring-boot-starter"
+    api "org.springframework.kafka:spring-kafka"
+    api "org.apache.kafka:kafka-clients"
+    api "org.apache.commons:commons-text:${COMMONS_TEXT_VERSION}"
+    api "io.confluent:kafka-avro-serializer:${CONFLUENT_AVRO_SERIALIZER_VERSION}"
+    api "jakarta.validation:jakarta.validation-api"
+    api "jakarta.xml.bind:jakarta.xml.bind-api:${JAKARTA_XML_BIND_API_VERSION}"
+    api "jakarta.annotation:jakarta.annotation-api"
+}

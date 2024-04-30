@@ -1,0 +1,23 @@
+{
+  "type": "record",
+  "name": "ErrorEvent",
+  "namespace": "com.kainos.common.avro",
+  "fields": [
+    {
+      "name": "message",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null
+    },
+    {
+      "name": "traceId",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null
+    }
+  ]
+}

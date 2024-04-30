@@ -1,0 +1,22 @@
+buildscript {
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${SPRING_BOOT_VERSION}")
+    }
+}
+
+apply plugin: "java-library"
+
+repositories {
+    mavenCentral()
+    maven { url 'https://plugins.gradle.org/m2/' }
+    maven { url 'https://packages.confluent.io/maven/' }
+}
+
+dependencies {
+    api project(":tracing")
+
+    api "org.springframework.boot:spring-boot-starter-web"
+    api "org.springframework:spring-web"
+    api "io.etcd:jetcd-core:${JETCD_CORE_VERSION}"
+    api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+}

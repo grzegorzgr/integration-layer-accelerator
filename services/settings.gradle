@@ -12,7 +12,23 @@ include ':avro-models'
 include ':avro-schemas'
 include ':demo'
 include ':error-handling'
+include ':error-handling-lib'
+include ':etcd-client'
+include ':exceptions'
+include ':kafka-core'
+include ':logback-config'
+include ':logging'
+include ':model-mapper'
+include ':tracing'
 
 project(":api-models").projectDir = file("./libs/api-models")
 project(":avro-models").projectDir = file("./libs/avro-models")
 project(":avro-schemas").projectDir = file("./libs/avro-schemas")
+project(":error-handling-lib").projectDir = file("./libs/error-handling-lib")
+project(":etcd-client").projectDir = file("./libs/etcd-client")
+project(":exceptions").projectDir = file("./libs/exceptions")
+project(":kafka-core").projectDir = file("./libs/kafka-core")
+project(":logback-config").projectDir = file("./libs/logback-config")
+project(":logging").projectDir = file("./libs/logging")
+project(":model-mapper").projectDir = file("./libs/model-mapper")
+project(":tracing").projectDir = file("./libs/tracing")

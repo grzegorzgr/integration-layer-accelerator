@@ -1,0 +1,4 @@
+com.kainos.exception.GlobalKafkaListenerExceptionErrorHandler
+com.kainos.errorreporting.ErrorReporter
+com.kainos.ErrorHandlingPropertiesConfiguration
+com.kainos.consumermanagement.ConsumerManagementConfiguration

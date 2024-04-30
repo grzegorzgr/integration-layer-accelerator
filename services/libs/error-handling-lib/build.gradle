@@ -1,0 +1,20 @@
+apply plugin: "java-library"
+
+repositories {
+    mavenCentral()
+    maven { url 'https://plugins.gradle.org/m2/' }
+    maven { url 'https://packages.confluent.io/maven/' }
+}
+
+dependencies {
+    api project(":api-models")
+    api project(":avro-models")
+    api project(":tracing")
+    api project(":logback-config")
+    api project(":kafka-core")
+    api project(":logging")
+    api project(":etcd-client")
+
+    api "org.springframework.boot:spring-boot-starter-actuator"
+    api "io.zipkin.brave:brave-instrumentation-kafka-clients:${BRAVE_INSTRUMENTATION_KAFKA_CLIENTS_VERSION}"
+}

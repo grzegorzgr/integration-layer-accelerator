@@ -1,0 +1,16 @@
+buildscript {
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${SPRING_BOOT_VERSION}")
+    }
+}
+
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+    implementation project(":error-handling-lib")
+
+    implementation "io.micrometer:micrometer-registry-prometheus"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.kafka:spring-kafka"
+}

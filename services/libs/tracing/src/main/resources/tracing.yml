@@ -1,0 +1,18 @@
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+    baggage:
+      correlation:
+        fields:
+          - trace-id
+          - is-async
+          - error-id
+          - error-message
+          - error-code
+      remote-fields:
+        - trace-id
+        - is-async
+        - error-id
+        - error-message
+        - error-code

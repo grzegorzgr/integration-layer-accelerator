@@ -1,0 +1,27 @@
+apply plugin: "java-library"
+
+repositories {
+    mavenCentral()
+    maven { url 'https://plugins.gradle.org/m2/' }
+    maven { url 'https://packages.confluent.io/maven/' }
+}
+
+dependencies {
+    api project(":logback-config")
+    api project(":tracing")
+    api project(":exceptions")
+
+    api "org.springframework:spring-web"
+    api "org.springframework.boot:spring-boot-starter"
+    api "org.springframework.boot:spring-boot-starter-web"
+    api "org.springframework.kafka:spring-kafka"
+    api "jakarta.validation:jakarta.validation-api"
+    api "org.apache.avro:avro:${APACHE_AVRO_VERSION}"
+    api "org.apache.kafka:kafka-clients"
+    api "commons-io:commons-io:${COMMONS_IO_VERSION}"
+    api "com.google.code.findbugs:annotations:${GOOGLE_CODE_FINDBUGS_ANNOTATIONS_VERSION}"
+    api "org.zalando:logbook-core:${ZALANDO_LOGBOOK_VERSION}"
+    api "org.zalando:logbook-netty:${ZALANDO_LOGBOOK_VERSION}"
+    api "org.zalando:logbook-servlet:${ZALANDO_LOGBOOK_VERSION}:javax"
+    api "org.apache.commons:commons-collections4:${APACHE_COMMONS_COLLECTIONS4_VERSION}"
+}
