@@ -30,23 +30,38 @@ jobs:
           cd services
           ./gradlew clean assemble
 
-      - name: Upload api-gateway
-        uses: actions/upload-artifact@v4
-        with:
-          name: api-gateway.jar
-          path: services/api-gateway/build/libs/api-gateway.jar
+      - name: Build docker images
+        run: |
+        SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+        for a in `find ~/ops/docker/ -name "build-image.sh"`; do ./$a $SHORT_SHA; done
 
-      - name: Upload demo app
-        uses: actions/upload-artifact@v4
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
-          name: demo.jar
-          path: services//demo/build/libs/demo.jar
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Upload error-handling
-        uses: actions/upload-artifact@v4
-        with:
-          name: error-handling.jar
-          path: services/error-handling/build/libs/error-handling.jar
+      - name: dummy
+        run: |
+        docker images
+
+      # - name: Upload api-gateway
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: api-gateway.jar
+      #     path: services/api-gateway/build/libs/api-gateway.jar
+
+      # - name: Upload demo app
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: demo.jar
+      #     path: services//demo/build/libs/demo.jar
+
+      # - name: Upload error-handling
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: error-handling.jar
+      #     path: services/error-handling/build/libs/error-handling.jar
       
       # - name: Login to Docker Hub
       #   uses: docker/login-action@v3
@@ -60,139 +75,139 @@ jobs:
       #     push: true
       #     tags: user/app:latest
 
-  setup-workspace:
-      name: Create workspace
-      needs: build-and-push
-      runs-on: arc-runner-set
-      container:
-        image: smartpayimages/jdk-17-slim:technical
+  # setup-workspace:
+  #     name: Create workspace
+  #     needs: build-and-push
+  #     runs-on: arc-runner-set
+  #     container:
+  #       image: smartpayimages/jdk-17-slim:technical
 
-      steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  #     steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Setup Kubernetes
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'latest'
+  #     - name: Setup Kubernetes
+  #       uses: azure/setup-kubectl@v3
+  #       with:
+  #         version: 'latest'
 
-      - name: Configure Kubernetes
-        run: |
-          mkdir $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+  #     - name: Configure Kubernetes
+  #       run: |
+  #         mkdir $HOME/.kube
+  #         echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
 
-      - name: Create namespace
-        run: |
-          SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-          kubectl create namespace $SHORT_SHA
+  #     - name: Create namespace
+  #       run: |
+  #         SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+  #         kubectl create namespace $SHORT_SHA
 
-  deploy-etcd:
-      name: Deploy ETCD (bitnami)
-      needs: [build-and-push, setup-workspace]
-      runs-on: arc-runner-set
-      container:
-        image: smartpayimages/jdk-17-slim:technical
+  # deploy-etcd:
+  #     name: Deploy ETCD (bitnami)
+  #     needs: [build-and-push, setup-workspace]
+  #     runs-on: arc-runner-set
+  #     container:
+  #       image: smartpayimages/jdk-17-slim:technical
 
-      steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  #     steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Setup Kubernetes
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'latest'
+  #     - name: Setup Kubernetes
+  #       uses: azure/setup-kubectl@v3
+  #       with:
+  #         version: 'latest'
 
-      - name: Configure Kubernetes
-        run: |
-          mkdir $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+  #     - name: Configure Kubernetes
+  #       run: |
+  #         mkdir $HOME/.kube
+  #         echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
 
-      - name: Setup Helm
-        uses: azure/setup-helm@v1
-        with:
-          version: '3.14.0'
+  #     - name: Setup Helm
+  #       uses: azure/setup-helm@v1
+  #       with:
+  #         version: '3.14.0'
       
-      - name: Update Helm Repositories
-        run: |
-          helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm repo update
+  #     - name: Update Helm Repositories
+  #       run: |
+  #         helm repo add bitnami https://charts.bitnami.com/bitnami
+  #         helm repo update
 
-      - name: Deploy Etcd
-        run: |
-          SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-          helm upgrade --install --wait --set persistence.enabled=false etcd-$SHORT_SHA bitnami/etcd --namespace $SHORT_SHA
+  #     - name: Deploy Etcd
+  #       run: |
+  #         SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+  #         helm upgrade --install --wait --set persistence.enabled=false etcd-$SHORT_SHA bitnami/etcd --namespace $SHORT_SHA
 
-  deploy-kafka:
-    name: Deploy Confluent Kafka (custom)
-    needs: [build-and-push, setup-workspace]
-    runs-on: arc-runner-set
-    container:
-      image: smartpayimages/jdk-17-slim:technical
+  # deploy-kafka:
+  #   name: Deploy Confluent Kafka (custom)
+  #   needs: [build-and-push, setup-workspace]
+  #   runs-on: arc-runner-set
+  #   container:
+  #     image: smartpayimages/jdk-17-slim:technical
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v3
 
-    - name: Setup Kubernetes
-      uses: azure/setup-kubectl@v3
-      with:
-        version: 'latest'
+  #   - name: Setup Kubernetes
+  #     uses: azure/setup-kubectl@v3
+  #     with:
+  #       version: 'latest'
 
-    - name: Configure Kubernetes
-      run: |
-        mkdir $HOME/.kube
-        echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+  #   - name: Configure Kubernetes
+  #     run: |
+  #       mkdir $HOME/.kube
+  #       echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
 
-    - name: Setup Helm
-      uses: azure/setup-helm@v1
-      with:
-        version: '3.14.0'
+  #   - name: Setup Helm
+  #     uses: azure/setup-helm@v1
+  #     with:
+  #       version: '3.14.0'
     
-    - name: Update Helm Repositories
-      run: |
-        helm repo add confluent https://confluentinc.github.io/cp-helm-charts/
-        helm repo update
+  #   - name: Update Helm Repositories
+  #     run: |
+  #       helm repo add confluent https://confluentinc.github.io/cp-helm-charts/
+  #       helm repo update
 
-    - name: Create Kafka certs
-      run: |
-        SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        kubectl -n $SHORT_SHA create secret generic kafka \
-        --from-file=keystore=ops/tls/kafka/broker.keystore.jks \
-        --from-file=truststore=ops/tls/kafka/broker.truststore.jks \
-        --from-file=keycredential=ops/tls/kafka/keycredential \
-        --save-config --dry-run=true -o yaml | kubectl apply -f -
+  #   - name: Create Kafka certs
+  #     run: |
+  #       SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+  #       kubectl -n $SHORT_SHA create secret generic kafka \
+  #       --from-file=keystore=ops/tls/kafka/broker.keystore.jks \
+  #       --from-file=truststore=ops/tls/kafka/broker.truststore.jks \
+  #       --from-file=keycredential=ops/tls/kafka/keycredential \
+  #       --save-config --dry-run=true -o yaml | kubectl apply -f -
 
-    - name: Deploy Confluent Kafka, zookeeper and Schema Registry
-      run: |
-        SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        KAFKA_PORT=$(shuf -i 30000-32767 -n 1)
-        KAFKA_LISTENER="EXTERNAL://192.168.1.112:${KAFKA_PORT}"
-        helm upgrade --install --wait --namespace $SHORT_SHA \
-        --set "cp-kafka.fullnameOverride=kafka-$SHORT_SHA,cp-kafka.nodeport.firstListenerPort=$KAFKA_PORT,cp-kafka.configurationOverrides.advertised\\.listeners=${KAFKA_LISTENER}" \
-        --values ./ops/k8s/helm/kafka/values.yaml kafka-$SHORT_SHA ./ops/k8s/helm/kafka
+  #   - name: Deploy Confluent Kafka, zookeeper and Schema Registry
+  #     run: |
+  #       SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+  #       KAFKA_PORT=$(shuf -i 30000-32767 -n 1)
+  #       KAFKA_LISTENER="EXTERNAL://192.168.1.112:${KAFKA_PORT}"
+  #       helm upgrade --install --wait --namespace $SHORT_SHA \
+  #       --set "cp-kafka.fullnameOverride=kafka-$SHORT_SHA,cp-kafka.nodeport.firstListenerPort=$KAFKA_PORT,cp-kafka.configurationOverrides.advertised\\.listeners=${KAFKA_LISTENER}" \
+  #       --values ./ops/k8s/helm/kafka/values.yaml kafka-$SHORT_SHA ./ops/k8s/helm/kafka
 
-  cleanup:
-    name: Cleanup
-    needs: [build-and-push, setup-workspace, deploy-etcd, deploy-kafka]
-    runs-on: arc-runner-set
-    container:
-      image: smartpayimages/jdk-17-slim:technical
+  # cleanup:
+  #   name: Cleanup
+  #   needs: [build-and-push, setup-workspace, deploy-etcd, deploy-kafka]
+  #   runs-on: arc-runner-set
+  #   container:
+  #     image: smartpayimages/jdk-17-slim:technical
 
-    steps:
-    - name: Setup Kubernetes
-      uses: azure/setup-kubectl@v3
-      with:
-        version: 'latest'
+  #   steps:
+  #   - name: Setup Kubernetes
+  #     uses: azure/setup-kubectl@v3
+  #     with:
+  #       version: 'latest'
 
-    - name: Configure Kubernetes
-      run: |
-        mkdir $HOME/.kube
-        echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+  #   - name: Configure Kubernetes
+  #     run: |
+  #       mkdir $HOME/.kube
+  #       echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
 
-    - name: Setup Helm
-      uses: azure/setup-helm@v1
-      with:
-        version: '3.14.0'
+  #   - name: Setup Helm
+  #     uses: azure/setup-helm@v1
+  #     with:
+  #       version: '3.14.0'
 
     - name: Remove apps
       run: |
