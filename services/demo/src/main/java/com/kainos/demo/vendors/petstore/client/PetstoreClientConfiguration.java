@@ -28,6 +28,7 @@ import feign.Client;
 import feign.Logger;
 import feign.RequestInterceptor;
 import feign.httpclient.ApacheHttpClient;
+import feign.slf4j.Slf4jLogger;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -52,13 +53,8 @@ public class PetstoreClientConfiguration {
     }
 
     @Bean
-    public Logger.Level feignLoggerLevel() {
-        return Logger.Level.FULL;
-    }
-
-    @Bean
     public RequestInterceptor traceIdInterceptor() {
-        return traceIdFeignClientRequestInterceptor.traceIdInterceptor();
+        return traceIdFeignClientRequestInterceptor.tracingInterceptor();
     }
 
     private CloseableHttpClient getCustomHttpClient() {

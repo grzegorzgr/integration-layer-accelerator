@@ -7,7 +7,6 @@ logging:
   level:
     org.zalando.logbook: TRACE
 
-
 petstore:
   url: http://localhost:8083
 

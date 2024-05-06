@@ -15,7 +15,7 @@ public class TraceIdFeignClientRequestInterceptor {
     private TraceContextProvider traceContextProvider;
 
     @Bean
-    public RequestInterceptor traceIdInterceptor() {
+    public RequestInterceptor tracingInterceptor() {
         return template -> {
             template.header(TRACE_ID_BAGGAGE, traceContextProvider.traceId());
         };
