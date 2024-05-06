@@ -1,0 +1,155 @@
+buildscript {
+    ext {
+        springBootVersion = '3.1.4'
+        serenityCoreVersion = '4.0.21'
+        junitVersion = '4.13.1'
+    }
+
+    repositories {
+        mavenCentral()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath 'net.serenity-bdd:serenity-gradle-plugin:4.0.21'
+    }
+}
+
+plugins {
+    id "com.github.spotbugs" version "5.0.14"
+    id "io.freefair.lombok" version '8.0.1'
+    id "io.spring.dependency-management" version "1.0.11.RELEASE"
+    id "checkstyle"
+    id 'java-library'
+}
+
+subprojects {
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'io.freefair.lombok'
+    apply from: '../../../services/versions.gradle'
+
+    repositories {
+        mavenCentral()
+        maven {
+            url 'http://packages.confluent.io/maven/'
+            allowInsecureProtocol = true
+        }
+    }
+
+    buildscript {
+        repositories {
+            mavenCentral()
+        }
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:${SPRING_BOOT_VERSION}"
+        }
+    }
+
+    apply plugin: "io.spring.dependency-management"
+    apply plugin: "java"
+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+
+    test {
+        filter {
+            includeTestsMatching "*Test"
+            includeTestsMatching "*IT"
+        }
+    }
+
+    // This exclusion guarantees that inner classes inside classes ending with "Test" or "IT" are not scanned for
+    // test methods (annotated by @Test)
+    tasks.withType(Test) {
+        exclude "**/*\$*.class"
+    }
+}
+
+apply plugin: 'idea'
+apply plugin: "java-library"
+apply plugin: "net.serenity-bdd.serenity-gradle-plugin"
+
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url 'http://packages.confluent.io/maven/'
+        allowInsecureProtocol = true
+    }
+}
+
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test) {
+    outputs.upToDateWhen { false }
+    systemProperty "file.encoding", "utf-8"
+    systemProperty "spring.profiles.active", "onprem,cloud"
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
+
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
+    excludeFilter = rootProject.file('config/spotbugs/exclude.xml')
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        failOnVersionConflict()
+        preferProjectModules()
+    }
+}
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+
+dependencies {
+
+    testImplementation group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.1'
+    testImplementation "org.codehaus.jackson:jackson-mapper-asl:1.9.13"
+    testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '5.2.0'
+
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.11'
+    testImplementation group: 'com.google.code.findbugs', name: 'annotations', version: '3.0.1'
+    testImplementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+    testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+    testImplementation group: 'org.apache.cxf', name: 'cxf-spring-boot-starter-jaxws', version: '4.0.1'
+    testImplementation "net.serenity-bdd:serenity-core:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-cucumber:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-screenplay:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-screenplay-webdriver:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-ensure:${serenityCoreVersion}",
+            "io.cucumber:cucumber-junit-platform-engine:7.11.1",
+            "org.junit.platform:junit-platform-suite:1.9.2",
+            "junit:junit:${junitVersion}"
+}
+
+test {
+    useJUnitPlatform()
+    testLogging.showStandardStreams = true
+    systemProperties System.getProperties()
+}
+
+gradle.startParameter.continueOnFailure = true
