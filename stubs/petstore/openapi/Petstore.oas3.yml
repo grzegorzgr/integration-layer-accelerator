@@ -5,7 +5,7 @@ info:
   license:
     name: MIT
 servers:
-  - url: http://petstore.swagger.io/v1
+  - url: http://petstore.swagger.io
 paths:
   /pets:
     get:
@@ -75,6 +75,7 @@ components:
           type: string
         tag:
           type: string
+          nullable: true
     Pets:
       type: array
       maxItems: 100

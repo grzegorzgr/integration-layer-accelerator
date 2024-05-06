@@ -8,6 +8,7 @@ apply plugin: 'org.springframework.boot'
 
 dependencies {
     implementation project(":api-models")
+    implementation project(":tracing")
 
     implementation "io.micrometer:micrometer-registry-prometheus"
     implementation "org.springframework.boot:spring-boot-starter-actuator"

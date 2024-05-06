@@ -3,18 +3,11 @@ import { container } from 'tsyringe';
 import express, { Request, Response } from 'express';
 import http from 'http';
 import morgan from 'morgan';
-import inputValidation, { ajvValidatorOptions } from 'openapi-validator-middleware';
+import * as OpenApiValidator from 'express-openapi-validator';
 
 import LogRequestsController from './api/controllers/LogRequestsController';
 import FailController from './api/controllers/FailController';
 import PetstoreController from './api/controllers/PetstoreController';
-
-const validationOptions: ajvValidatorOptions = {
-  framework: 'express',
-  contentTypeValidation: true,
-  beautifyErrors: true
-};
-inputValidation.init('openapi/Petstore.oas3.yml', validationOptions);
 
 const port = 8083;
 
@@ -26,14 +19,22 @@ const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.text());
 
 morgan.token('all-headers', (req: Request, _res: Response) => { return JSON.stringify(req.headers); });
 app.use(morgan(`:remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" ":all-headers"`));
 
+app.use(
+    OpenApiValidator.middleware({
+      apiSpec: './openapi/Petstore.oas3.yml',
+      validateRequests: true,
+      validateResponses: true,
+    }),
+);
 
 // Petstore Controller
-app.get('/pets', inputValidation.validate, (req: Request, res: Response) => petstoreController.listPets(req, res));
-app.post('/pets', inputValidation.validate, (req: Request, res: Response) => petstoreController.createPets(req, res));
+app.get('/pets', (req: Request, res: Response) => petstoreController.listPets(req, res));
+app.post('/pets', (req: Request, res: Response) => petstoreController.createPets(req, res));
 
 // Test endpoints:
 
@@ -45,12 +46,10 @@ app.post('/requests/fail', (req: Request, res: Response) => failController.failN
 
 // Custom error handler
 app.use((err: any, _req: Request, res: Response, _next: any) => {
-  if (err instanceof inputValidation.InputValidationError) {
-    return res.status(400).json({ more_info: JSON.stringify(err.errors) });
-  }
-
+  console.log(`ERROR ${err}`);
   return res.status(err.status || 500).json({
     message: err.message || 'No additional information',
+    errors: err.errors,
   });
 });
 

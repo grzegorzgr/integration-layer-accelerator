@@ -16,16 +16,26 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
+import com.kainos.tracing.TraceIdFeignClientRequestInterceptor;
+
 import feign.Client;
+import feign.Logger;
+import feign.RequestInterceptor;
 import feign.httpclient.ApacheHttpClient;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Configuration
 public class PetstoreClientConfiguration {
+
+    @Autowired
+    private TraceIdFeignClientRequestInterceptor traceIdFeignClientRequestInterceptor;
 
     private static final String PKCS12 = "PKCS12";
 
@@ -39,6 +49,16 @@ public class PetstoreClientConfiguration {
     public Client feignClient() {
         return new ApacheHttpClient(
             isSslEnabled() ? getCustomHttpClient() : HttpClients.createDefault());
+    }
+
+    @Bean
+    public Logger.Level feignLoggerLevel() {
+        return Logger.Level.FULL;
+    }
+
+    @Bean
+    public RequestInterceptor traceIdInterceptor() {
+        return traceIdFeignClientRequestInterceptor.traceIdInterceptor();
     }
 
     private CloseableHttpClient getCustomHttpClient() {
