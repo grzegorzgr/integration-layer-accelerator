@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+#  error-handling:
+#    #image:
+#    ports:
+#      - "10001:8080"
+#
+#  demo:
+#    #image:
+#    ports:
+#      - "10002:8080"
+
+  api-gateway:
+    image: com.kainos/api-gateway:${DOCKER_TAG}
+    ports:
+      - "10003:8080"
+    environment:
+      JVM_OPTS: $JVM_OPTS
