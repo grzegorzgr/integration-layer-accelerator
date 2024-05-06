@@ -75,6 +75,7 @@ components:
           type: string
         tag:
           type: string
+          nullable: true
     Pets:
       type: array
       maxItems: 100

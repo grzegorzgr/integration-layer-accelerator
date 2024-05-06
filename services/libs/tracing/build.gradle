@@ -10,6 +10,7 @@ dependencies {
     api "org.apache.commons:commons-lang3"
     api "org.springframework.kafka:spring-kafka"
     api "net.logstash.logback:logstash-logback-encoder:${LOGSTASH_LOGBACK_ENCODER_VERSION}"
+    api "org.springframework.cloud:spring-cloud-starter-openfeign:${SPRING_CLOUD_OPENFEIGN_VERSION}"
     api "jakarta.validation:jakarta.validation-api"
 
     api platform('io.micrometer:micrometer-tracing-bom:latest.release')
