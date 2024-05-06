@@ -1,5 +1,4 @@
 FROM eclipse-temurin:17.0.11_9-jre
-#FROM kainoscom/jdk-17-apm:latest
 
 COPY api-gateway.jar /
 

@@ -12,7 +12,7 @@ services:
 #      - "10002:8080"
 
   api-gateway:
-    image: com.kainos/api-gateway:${DOCKER_TAG}
+    image: com.kainos/api-gateway:$DOCKER_TAG
     ports:
       - "10003:8080"
     environment:
