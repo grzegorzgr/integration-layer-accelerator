@@ -5,4 +5,4 @@ pushd ../docker/services/api-gateway && ./build-image.sh
 popd
 
 docker-compose down
-docker-compose up
+docker-compose up -d
