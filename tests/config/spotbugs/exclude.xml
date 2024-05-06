@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter
+        xmlns="https://github.com/spotbugs/filter/3.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd">
+    <Match>
+        <Bug pattern="DCN_NULLPOINTER_EXCEPTION" />
+        <Class name="com.nexigroup.ms.tests.utils.NullSafeTransformationUtil" />
+    </Match>
+
+    <!-- Ignore returning references to internal representations of objects -->
+    <!-- Ignoring when internal representation stores reference to external representation -->
+    <!-- This is in 99% cases because of Lombok and swagger-codegen usage -->
+    <!-- Preventing this would case the code to be heavily unreadable and in most cases is not worth it in our scenarios -->
+    <Match>
+        <Bug pattern="MS_EXPOSE_REP,EI_EXPOSE_REP,EI_EXPOSE_REP2,EI_EXPOSE_STATIC_REP2"/>
+    </Match>
+</FindBugsFilter>
