@@ -9,8 +9,8 @@ import org.springframework.validation.annotation.Validated;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-@Primary
-@Component
+//@Primary
+//@Component
 @Data
 @Validated
 @EnableConfigurationProperties

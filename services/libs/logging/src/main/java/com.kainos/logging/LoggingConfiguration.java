@@ -18,6 +18,11 @@ public class LoggingConfiguration {
     }
 
     @Bean
+    public GlobalRedactorProperties globalRedactorProperties() {
+        return new GlobalRedactorProperties();
+    }
+
+    @Bean
     public JsonRedactor jsonRedactor() {
         return new JsonRedactor();
     }

@@ -1,11 +1,13 @@
 version: '3'
 
 services:
-#  error-handling:
-#    #image:
-#    ports:
-#      - "10001:8080"
-#
+  error-handling:
+    image: com.kainos/error-handling:$DOCKER_TAG
+    ports:
+      - "10001:8080"
+    environment:
+      JVM_OPTS: $JVM_OPTS
+
   demo:
     image: com.kainos/demo:$DOCKER_TAG
     ports:

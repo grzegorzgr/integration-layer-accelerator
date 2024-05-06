@@ -1,5 +1,5 @@
-kafka.KafkaConfiguration
-kafka.KafkaProducer
-kafka.ssl.SslPropertiesProvider
-kafka.redactor.RedactorPropertiesProvider
-kafka.headers.KafkaRecordHeadersProvider
+com.kainos.kafka.KafkaConfiguration
+com.kainos.kafka.KafkaProducer
+com.kainos.kafka.ssl.SslPropertiesProvider
+com.kainos.kafka.redactor.RedactorPropertiesProvider
+com.kainos.kafka.headers.KafkaRecordHeadersProvider

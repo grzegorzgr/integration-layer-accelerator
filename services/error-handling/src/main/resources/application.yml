@@ -1,3 +1,5 @@
+spring.application.name: error-handling
+
 kafka:
   broker: localhost:9093
   schema_registry: http://localhost:8081
@@ -57,13 +59,10 @@ logback:
     schema_registry: ${kafka.schema_registry}
 
 logging:
-  # output: json
   level:
     com.nexigroup.ms.logging.LoggingInterceptorLogEventSender: DEBUG
     com.nexigroup.ms.logging.KafkaConsumerLoggingInterceptor: DEBUG
     org.zalando.logbook: TRACE
-
-spring.application.name: error-handling
 
 etcd:
   endpoint: http://localhost:2379
