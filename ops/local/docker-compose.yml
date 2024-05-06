@@ -6,10 +6,13 @@ services:
 #    ports:
 #      - "10001:8080"
 #
-#  demo:
-#    #image:
-#    ports:
-#      - "10002:8080"
+  demo:
+    image: com.kainos/demo:$DOCKER_TAG
+    ports:
+      - "10002:8080"
+    environment:
+      JVM_OPTS: $JVM_OPTS
+      PETSTORE_URL: $URL_EXTERNAL_PETSTORE
 
   api-gateway:
     image: com.kainos/api-gateway:$DOCKER_TAG
