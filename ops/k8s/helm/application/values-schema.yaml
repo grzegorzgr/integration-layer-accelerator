@@ -34,11 +34,7 @@ apps:
         cpu: 100m
         memory: 128Mi
 
-    volumes:
-      - name: mtls-certs1
-        secretName: mtls-certs1
-        mountPath: /opt/certs/mtls1
-        optional: false
+    volumes: []
 
     autoscaling:
       enabled: false
