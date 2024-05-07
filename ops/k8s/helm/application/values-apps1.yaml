@@ -18,11 +18,11 @@ apps:
 
     extraEnv:
     - name: URL_SERVICE_DEMO
-      value: "http://demo:8080"
+      value: "http://demo-svc:8080"
     - name: URL_SERVICE_ERROR_HANDLING
-      value: "http://error-handling:8080"
+      value: "http://error-handling-svc:8080"
     - name: URL_EXTERNAL_PETSTORE
-      value: "http://petstore-stub:8080"
+      value: "http://petstore-stub-svc:8080"
     - name: SERVER_SSL_ENABLED
       value: "true"
     - name: SERVER_SSL_CLIENTAUTH
