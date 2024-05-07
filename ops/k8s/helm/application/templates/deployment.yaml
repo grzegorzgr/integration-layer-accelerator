@@ -59,6 +59,10 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
       topologySpreadConstraints:
 {{ include "application.topologySpreadConstraints" $outer | indent 6 -}}
       volumes:

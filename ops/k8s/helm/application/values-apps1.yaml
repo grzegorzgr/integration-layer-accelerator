@@ -7,8 +7,8 @@ apps:
   apigateway:
     name: api-gateway
     image:
-      repository: my-first-repository/api-gateway
-      # tag: notaglobaltag
+      repository: ggruszecki/helm-accelerator
+      # tag: api-gateway
 
     podAnnotations: {}
 
@@ -22,11 +22,11 @@ apps:
 
     resources:
       limits:
+        cpu: 1
+        memory: 1536Mi
+      requests:
         cpu: 500m
         memory: 1024Mi
-      requests:
-        cpu: 1000m
-        memory: 1536Mi
 
     volumes:
       - name: server-certs
@@ -45,7 +45,8 @@ apps:
       targetCPUUtilizationPercentage: 80
       # targetMemoryUtilizationPercentage: 80
 
-    imagePullSecrets: []
+    imagePullSecrets:
+      - name: regcred
     nodeSelector: {}
     tolerations: []
     affinity: {}
