@@ -1,0 +1,54 @@
+##### APPLICATIONS
+
+apps:
+###################################
+####### SCHEMA-REGISTRY ##############
+###################################
+  schemaregistry:
+    name: schema-registry
+    image:
+      repository: confluentinc/cp-schema-registry
+      tag: 5.5.1
+
+    podAnnotations: {}
+
+    service:
+      type: ClusterIP
+      port: 8081
+
+    extraEnv:
+    - name: SCHEMA_REGISTRY_HOST_NAME
+      value: "schema-registry"
+    - name: SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR
+      value: "1"
+    - name: SCHEMA_REGISTRY_KAFKASTORE_TOPIC
+      value: "_schemas"
+    - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
+      value: "PLAINTEXT://kafka-main-headless:9092"
+
+    resources:
+      limits:
+        cpu: 150m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+    volumes:
+      - name: mtls-certs1
+        secretName: mtls-certs1
+        mountPath: /opt/certs/mtls1
+        optional: false
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 6
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+
+    imagePullSecrets:
+    - name: regcred
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
