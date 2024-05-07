@@ -22,3 +22,6 @@ services:
       - "10003:8080"
     environment:
       JVM_OPTS: $JVM_OPTS
+      SERVER_SSL_ENABLED: 'false'
+      URL_SERVICE_DEMO: $URL_SERVICE_DEMO
+      URL_SERVICE_ERROR_HANDLING: $URL_SERVICE_DEMO

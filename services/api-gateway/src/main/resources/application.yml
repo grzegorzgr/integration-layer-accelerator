@@ -83,5 +83,3 @@ logging.level.root: INFO
 spring.application.name: api-gateway
 spring.main.allow-bean-definition-overriding: true
 spring.main.allow-circular-references: true
-
-
