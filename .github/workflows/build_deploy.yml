@@ -99,8 +99,8 @@ jobs:
           CR_PAT: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
         run: |
           SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-          kubectl create namespace ${GITHUB_REF##*/}
-          kubectl create secret docker-registry regcred --namespace ${GITHUB_REF##*/} --docker-server=https://ghcr.io --docker-username=grzegorzgr --docker-password=$CR_PAT --docker-email=grzegorzgr@kainos.com 
+          kubectl get namespace ${GITHUB_REF##*/} || kubectl create namespace ${GITHUB_REF##*/}
+          kubectl get secret regcred -n ${GITHUB_REF##*/} || kubectl create secret docker-registry regcred --namespace ${GITHUB_REF##*/} --docker-server=https://ghcr.io --docker-username=grzegorzgr --docker-password=$CR_PAT --docker-email=grzegorzgr@kainos.com 
 
   deploy-etcd:
       name: Deploy ETCD (bitnami)
