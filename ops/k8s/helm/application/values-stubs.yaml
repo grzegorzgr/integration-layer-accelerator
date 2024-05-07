@@ -5,7 +5,7 @@ apps:
 ####### PETSTORE STUB ###########
 ###################################
   petstore:
-    name: petstore
+    name: petstore-stub
     image:
       repository: ghcr.io/grzegorzgr/petstore-stub
       # tag: dummy
