@@ -54,7 +54,7 @@ jobs:
           for a in `ls`
             do cd $a && \
             ./build-image.sh $a:latest &&
-            docker tag $a:latest ghcr.io/grzegorzgr/$a:${GITHUB_REF##*/} && \
+            docker tag $a:latest ghcr.io/grzegorzgr/$a-stub:${GITHUB_REF##*/} && \
             cd ..;
           done
           
