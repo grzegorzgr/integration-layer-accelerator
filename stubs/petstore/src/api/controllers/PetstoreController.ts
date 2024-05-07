@@ -53,6 +53,6 @@ export default class PetstoreController {
     if (traceId != undefined && PetstoreController.PETS[traceId]) {
       return res.status(200).json(PetstoreController.PETS[traceId]);
     }
-    return res.status(201).json([]);
+    return res.status(200).json([]);
   }
 };

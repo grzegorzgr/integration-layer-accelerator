@@ -1,5 +1,7 @@
 # Petstore stub
 
+Node version: `v22.1.0`
+
 # Supported API endpoints
 
 - `GET /pets` - listPets

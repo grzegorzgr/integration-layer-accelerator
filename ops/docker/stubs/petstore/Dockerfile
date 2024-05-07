@@ -1,4 +1,4 @@
-FROM kainoscom/node:10-alpine-swagger as build-dev
+FROM node:22.1.0-bullseye-slim as build-dev
 
 WORKDIR /petstore
 COPY /tmp/petstore/package.json .
@@ -6,7 +6,7 @@ RUN npm install
 COPY /tmp/petstore .
 RUN npm run build
 
-FROM kainoscom/node:10-alpine-swagger
+FROM node:22.1.0-bullseye-slim
 
 WORKDIR /petstore
 COPY /tmp/petstore/package.json .
