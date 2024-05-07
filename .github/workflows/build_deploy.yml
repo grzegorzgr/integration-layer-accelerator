@@ -31,6 +31,8 @@ jobs:
           ./gradlew clean assemble
 
       - name: Build docker images
+        env:
+          USERNAME: grzegorzgr
         run: |
           SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
           ls -lah
@@ -38,23 +40,23 @@ jobs:
           for a in `ls`
             do cd $a && \
             ./build-image.sh $a:latest &&
-            docker tag $a:latest grzegorzgr/$a:$SHORT_SHA && \
+            docker tag $a:latest ghcr.io/grzegorzgr/$a:$SHORT_SHA && \
             cd ..;
           done
           
       - name: Push docker images
         env:
-          DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          CR_PAT: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+          USERNAME: grzegorzgr
         run: |
-          docker login -u $DOCKER_USER -p $DOCKER_PASSWORD docker.io
+          echo $CR_PAT | docker login ghcr.io -u $USERNAME --password-stdin
           SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
 
           docker images
 
-          docker push grzegorzgr/api-gateway:$SHORT_SHA
-          docker push grzegorzgr/error-handling:$SHORT_SHA
-          docker push grzegorzgr/demo:$SHORT_SHA
+          docker push ghcr.io/$USERNAME/api-gateway:$SHORT_SHA
+          docker push ghcr.io/$USERNAME/error-handling:$SHORT_SHA
+          docker push ghcr.io/$USERNAME/demo:$SHORT_SHA
 
   setup-workspace:
       name: Create workspace
