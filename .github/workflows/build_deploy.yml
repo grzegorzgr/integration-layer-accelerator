@@ -208,6 +208,14 @@ jobs:
         helm upgrade --install --namespace $SHORT_SHA \
         -f ./ops/k8s/helm/application/values-apps2.yaml -f ./ops/k8s/helm/application/values-common.yaml --set tag=$SHORT_SHA demo-app-$SHORT_SHA ./ops/k8s/helm/application
 
+    # - name: Deploy application
+    #   run: |
+    #     helm upgrade --install --namespace $SHORT_SHA \
+    #     -f ./ops/k8s/helm/application/values-apps1.yaml -f ./ops/k8s/helm/application/values-common.yaml --set tag=api-gateway-latest api-gateway-$SHORT_SHA ./ops/k8s/helm/application
+
+    #     helm upgrade --install --namespace $SHORT_SHA \
+    #     -f ./ops/k8s/helm/application/values-apps2.yaml -f ./ops/k8s/helm/application/values-common.yaml demo-app-$SHORT_SHA ./ops/k8s/helm/application
+
   cleanup:
     name: Cleanup
     needs: [build-and-push, setup-workspace, deploy-etcd, deploy-kafka, deploy-application]
