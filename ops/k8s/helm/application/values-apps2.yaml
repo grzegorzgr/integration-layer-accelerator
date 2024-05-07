@@ -7,8 +7,8 @@ apps:
   demo:
     name: demo
     image:
-      repository: ggruszecki/helm-accelerator
-      tag: demo
+      repository: ghcr.io/grzegorzgr/demo
+      # tag: demo
 
     podAnnotations: {}
 
@@ -53,8 +53,8 @@ apps:
   errorhandling:
     name: error-handling
     image:
-      repository: ggruszecki/helm-accelerator
-      tag: error-handling
+      repository: ghcr.io/grzegorzgr/error-handling
+      # tag: error-handling
 
     podAnnotations: {}
 
@@ -88,7 +88,7 @@ apps:
         optional: false
 
     autoscaling:
-      enabled: true
+      enabled: false
       minReplicas: 1
       maxReplicas: 6
       targetCPUUtilizationPercentage: 80
