@@ -40,7 +40,7 @@ jobs:
           for a in `ls`
             do cd $a && \
             ./build-image.sh $a:latest &&
-            docker tag $a:latest ghcr.io/grzegorzgr/$a:$SHORT_SHA && \
+            docker tag $a:latest ghcr.io/grzegorzgr/$a:${GITHUB_REF##*/} && \
             cd ..;
           done
           
@@ -54,9 +54,9 @@ jobs:
 
           docker images
 
-          docker push ghcr.io/$USERNAME/api-gateway:$SHORT_SHA
-          docker push ghcr.io/$USERNAME/error-handling:$SHORT_SHA
-          docker push ghcr.io/$USERNAME/demo:$SHORT_SHA
+          docker push ghcr.io/$USERNAME/api-gateway:${GITHUB_REF##*/}
+          docker push ghcr.io/$USERNAME/error-handling:${GITHUB_REF##*/}
+          docker push ghcr.io/$USERNAME/demo:${GITHUB_REF##*/}
 
   setup-workspace:
       name: Create workspace
@@ -84,8 +84,8 @@ jobs:
           CR_PAT: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
         run: |
           SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-          kubectl create namespace $SHORT_SHA
-          kubectl create secret docker-registry regcred --namespace $SHORT_SHA --docker-server=https://ghcr.io --docker-username=grzegorzgr --docker-password=$CR_PAT --docker-email=grzegorzgr@kainos.com 
+          kubectl create namespace ${GITHUB_REF##*/}
+          kubectl create secret docker-registry regcred --namespace ${GITHUB_REF##*/} --docker-server=https://ghcr.io --docker-username=grzegorzgr --docker-password=$CR_PAT --docker-email=grzegorzgr@kainos.com 
 
   deploy-etcd:
       name: Deploy ETCD (bitnami)
@@ -121,7 +121,7 @@ jobs:
       - name: Deploy Etcd
         run: |
           SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-          helm upgrade --install --wait --set persistence.enabled=false etcd-$SHORT_SHA bitnami/etcd --namespace $SHORT_SHA
+          helm upgrade --install --wait --set persistence.enabled=false etcd-${GITHUB_REF##*/} bitnami/etcd --namespace ${GITHUB_REF##*/}
 
   deploy-kafka:
     name: Deploy Confluent Kafka (custom)
@@ -157,7 +157,7 @@ jobs:
     - name: Create Kafka certs
       run: |
         SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        kubectl -n $SHORT_SHA create secret generic kafka \
+        kubectl -n ${GITHUB_REF##*/} create secret generic kafka \
         --from-file=keystore=ops/tls/kafka/broker.keystore.jks \
         --from-file=truststore=ops/tls/kafka/broker.truststore.jks \
         --from-file=keycredential=ops/tls/kafka/keycredential \
@@ -169,9 +169,9 @@ jobs:
         SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
         KAFKA_PORT=$(shuf -i 30000-32767 -n 1)
         KAFKA_LISTENER="EXTERNAL://192.168.1.112:${KAFKA_PORT}"
-        helm upgrade --install --wait --namespace $SHORT_SHA \
-        --set "cp-kafka.fullnameOverride=kafka-$SHORT_SHA,cp-kafka.nodeport.firstListenerPort=$KAFKA_PORT,cp-kafka.configurationOverrides.advertised\\.listeners=${KAFKA_LISTENER}" \
-        --values ./ops/k8s/helm/kafka/values.yaml kafka-$SHORT_SHA ./ops/k8s/helm/kafka
+        helm upgrade --install --wait --namespace ${GITHUB_REF##*/} \
+        --set "cp-kafka.fullnameOverride=kafka-${GITHUB_REF##*/},cp-kafka.nodeport.firstListenerPort=$KAFKA_PORT,cp-kafka.configurationOverrides.advertised\\.listeners=${KAFKA_LISTENER}" \
+        --values ./ops/k8s/helm/kafka/values.yaml kafka-${GITHUB_REF##*/} ./ops/k8s/helm/kafka
   
   deploy-application:
     name: Deploy Demo app with Helm
@@ -202,19 +202,19 @@ jobs:
     - name: Deploy application
       run: |
         SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        helm upgrade --install --namespace $SHORT_SHA \
-        -f ./ops/k8s/helm/application/values-apps1.yaml -f ./ops/k8s/helm/application/values-common.yaml --set tag=$SHORT_SHA api-gateway-$SHORT_SHA ./ops/k8s/helm/application
+        helm upgrade --install --namespace ${GITHUB_REF##*/} \
+        -f ./ops/k8s/helm/application/values-apps1.yaml -f ./ops/k8s/helm/application/values-common.yaml --set tag=${GITHUB_REF##*/} api-gateway-${GITHUB_REF##*/} ./ops/k8s/helm/application
 
-        helm upgrade --install --namespace $SHORT_SHA \
-        -f ./ops/k8s/helm/application/values-apps2.yaml -f ./ops/k8s/helm/application/values-common.yaml --set tag=$SHORT_SHA demo-app-$SHORT_SHA ./ops/k8s/helm/application
+        helm upgrade --install --namespace ${GITHUB_REF##*/} \
+        -f ./ops/k8s/helm/application/values-apps2.yaml -f ./ops/k8s/helm/application/values-common.yaml --set tag=${GITHUB_REF##*/} demo-app-${GITHUB_REF##*/} ./ops/k8s/helm/application
 
     # - name: Deploy application
     #   run: |
-    #     helm upgrade --install --namespace $SHORT_SHA \
-    #     -f ./ops/k8s/helm/application/values-apps1.yaml -f ./ops/k8s/helm/application/values-common.yaml --set tag=api-gateway-latest api-gateway-$SHORT_SHA ./ops/k8s/helm/application
+    #     helm upgrade --install --namespace ${GITHUB_REF##*/} \
+    #     -f ./ops/k8s/helm/application/values-apps1.yaml -f ./ops/k8s/helm/application/values-common.yaml --set tag=api-gateway-latest api-gateway-${GITHUB_REF##*/} ./ops/k8s/helm/application
 
-    #     helm upgrade --install --namespace $SHORT_SHA \
-    #     -f ./ops/k8s/helm/application/values-apps2.yaml -f ./ops/k8s/helm/application/values-common.yaml demo-app-$SHORT_SHA ./ops/k8s/helm/application
+    #     helm upgrade --install --namespace ${GITHUB_REF##*/} \
+    #     -f ./ops/k8s/helm/application/values-apps2.yaml -f ./ops/k8s/helm/application/values-common.yaml demo-app-${GITHUB_REF##*/} ./ops/k8s/helm/application
 
   cleanup:
     name: Cleanup
@@ -242,7 +242,8 @@ jobs:
     - name: Remove apps
       run: |
         SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        sleep 60
-        kubectl get po -n $SHORT_SHA
-        helm uninstall etcd-$SHORT_SHA kafka-$SHORT_SHA --namespace $SHORT_SHA
-        kubectl delete namespace $SHORT_SHA
+        sleep 120
+        kubectl get po -n ${GITHUB_REF##*/}
+        kubectl get deploy -o wide -n ${GITHUB_REF##*/}
+        # helm uninstall etcd-${GITHUB_REF##*/} kafka-${GITHUB_REF##*/} --namespace ${GITHUB_REF##*/}
+        # kubectl delete namespace ${GITHUB_REF##*/}
