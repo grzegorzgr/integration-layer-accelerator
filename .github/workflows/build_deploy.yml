@@ -83,8 +83,6 @@ jobs:
         run: |
           SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
           kubectl create namespace $SHORT_SHA
-          kubectl get secret regcred -o json | jq 'del(.metadata.namespace,.metadata.resourceVersion,.metadata.uid) | .metadata.creationTimestamp=null' | \
-          kubectl apply -n $SHORT_SHA -f -
 
   deploy-etcd:
       name: Deploy ETCD (bitnami)
@@ -171,13 +169,13 @@ jobs:
         --set "cp-kafka.fullnameOverride=kafka-$SHORT_SHA,cp-kafka.nodeport.firstListenerPort=$KAFKA_PORT,cp-kafka.configurationOverrides.advertised\\.listeners=${KAFKA_LISTENER}" \
         --values ./ops/k8s/helm/kafka/values.yaml kafka-$SHORT_SHA ./ops/k8s/helm/kafka
 
-    - name: Deploy application
-      run: |
-        helm upgrade --install --namespace $SHORT_SHA \
-        -f ./ops/k8s/helm/application/values-apps1.yaml -f ./ops/k8s/helm/application/values-common.yaml --set tag=api-gateway-latest api-gateway-$SHORT_SHA ./ops/k8s/helm/application
+    # - name: Deploy application
+    #   run: |
+    #     helm upgrade --install --namespace $SHORT_SHA \
+    #     -f ./ops/k8s/helm/application/values-apps1.yaml -f ./ops/k8s/helm/application/values-common.yaml --set tag=api-gateway-latest api-gateway-$SHORT_SHA ./ops/k8s/helm/application
 
-        helm upgrade --install --namespace $SHORT_SHA \
-        -f ./ops/k8s/helm/application/values-apps2.yaml -f ./ops/k8s/helm/application/values-common.yaml demo-app-$SHORT_SHA ./ops/k8s/helm/application
+    #     helm upgrade --install --namespace $SHORT_SHA \
+    #     -f ./ops/k8s/helm/application/values-apps2.yaml -f ./ops/k8s/helm/application/values-common.yaml demo-app-$SHORT_SHA ./ops/k8s/helm/application
 
   cleanup:
     name: Cleanup
