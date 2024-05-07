@@ -24,7 +24,7 @@ apps:
     - name: URL_EXTERNAL_PETSTORE
       value: "http://petstore-stub-svc:8080"
     - name: SERVER_SSL_ENABLED
-      value: "true"
+      value: "false"
     - name: SERVER_SSL_CLIENTAUTH
       value: "want" ### want - validate client but do not drop connection; need - full mtls
 
@@ -36,15 +36,15 @@ apps:
         cpu: 500m
         memory: 512Mi
 
-    volumes:
-      - name: server-certs
-        secretName: api-gateway
-        mountPath: /opt/certs/api-gateway
-        optional: true
-      - name: mtls-certs2
-        secretName: mtls-certs2
-        mountPath: /opt/certs/mtls2
-        optional: true
+    volumes: []
+      # - name: server-certs
+      #   secretName: api-gateway
+      #   mountPath: /opt/certs/api-gateway
+      #   optional: true
+      # - name: mtls-certs2
+      #   secretName: mtls-certs2
+      #   mountPath: /opt/certs/mtls2
+      #   optional: true
 
     autoscaling:
       enabled: false

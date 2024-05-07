@@ -13,7 +13,7 @@ apps:
     podAnnotations: {}
 
     service:
-      type: NodePort
+      type: ClusterIP
       port: 8080
 
     extraEnv: []
@@ -62,9 +62,15 @@ apps:
       type: ClusterIP
       port: 8080
 
-    extraEnv: []
-    # - name: DUMMY_ENV
-    #   value: "abc123"
+    extraEnv:
+    - name: ETCD_ENDPOINT
+      value: "http://etcd-main:2379"
+    - name: SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL
+      value: "PLAINTEXT"
+    - name: KAFKA_BROKER
+      value: "kafka-main-headless:9092"
+    - name: KAFKA_SCHEMA_REGISTRY
+      value: "http://schema-registry-svc:8081"
 
     ### TODO - customized envFrom to load values for etcd and kafka on-demand
     # dependencies:
@@ -80,6 +86,58 @@ apps:
       requests:
         cpu: 100m
         memory: 256Mi
+
+    volumes:
+      - name: mtls-certs1
+        secretName: mtls-certs1
+        mountPath: /opt/certs/mtls1
+        optional: false
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 6
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+
+    imagePullSecrets:
+    - name: regcred
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+
+###################################
+####### SCHEMA-REGISTRY ##############
+###################################
+  schemaregistry:
+    name: schema-registry
+    image:
+      repository: confluentinc/cp-schema-registry
+      tag: 5.5.1
+
+    podAnnotations: {}
+
+    service:
+      type: ClusterIP
+      port: 8081
+
+    extraEnv:
+    - name: SCHEMA_REGISTRY_HOST_NAME
+      value: "schema-registry"
+    - name: SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR
+      value: "1"
+    - name: SCHEMA_REGISTRY_KAFKASTORE_TOPIC
+      value: "_schemas"
+    - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
+      value: "PLAINTEXT://kafka-main-headless:9092"
+
+    resources:
+      limits:
+        cpu: 150m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
 
     volumes:
       - name: mtls-certs1
