@@ -163,6 +163,7 @@ jobs:
         --from-file=keycredential=ops/tls/kafka/keycredential \
         --save-config --dry-run=true -o yaml | kubectl apply -f -
 
+
     - name: Deploy Confluent Kafka, zookeeper and Schema Registry
       run: |
         SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
@@ -171,6 +172,32 @@ jobs:
         helm upgrade --install --wait --namespace $SHORT_SHA \
         --set "cp-kafka.fullnameOverride=kafka-$SHORT_SHA,cp-kafka.nodeport.firstListenerPort=$KAFKA_PORT,cp-kafka.configurationOverrides.advertised\\.listeners=${KAFKA_LISTENER}" \
         --values ./ops/k8s/helm/kafka/values.yaml kafka-$SHORT_SHA ./ops/k8s/helm/kafka
+  
+  deploy-application:
+    name: Deploy Demo app with Helm
+    needs: [deploy-kafka, deploy-etcd]
+    runs-on: arc-runner-set
+    container:
+      image: smartpayimages/jdk-17-slim:technical
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Kubernetes
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+
+    - name: Configure Kubernetes
+      run: |
+        mkdir $HOME/.kube
+        echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+
+    - name: Setup Helm
+      uses: azure/setup-helm@v1
+      with:
+        version: '3.14.0'
 
     - name: Deploy application
       run: |
@@ -183,7 +210,7 @@ jobs:
 
   cleanup:
     name: Cleanup
-    needs: [build-and-push, setup-workspace, deploy-etcd, deploy-kafka]
+    needs: [build-and-push, setup-workspace, deploy-etcd, deploy-kafka, deploy-application]
     runs-on: arc-runner-set
     container:
       image: smartpayimages/jdk-17-slim:technical
