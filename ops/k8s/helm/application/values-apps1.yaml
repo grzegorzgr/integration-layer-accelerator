@@ -17,22 +17,30 @@ apps:
       port: 8080
 
     extraEnv:
-    - name: MERCHANT_URL
-      value: "https://merchant-svc:8080"
+    - name: URL_SERVICE_DEMO
+      value: "http://demo:8080"
+    - name: URL_SERVICE_ERROR_HANDLING
+      value: "http://error-handling:8080"
+    - name: URL_EXTERNAL_PETSTORE
+      value: "http://petstore-stub:8080"
+    - name: SERVER_SSL_ENABLED
+      value: "true"
+    - name: SERVER_SSL_CLIENTAUTH
+      value: "want" ### want - validate client but do not drop connection; need - full mtls
 
     resources:
       limits:
         cpu: 1
-        memory: 1536Mi
+        memory: 1024Mi
       requests:
         cpu: 500m
-        memory: 1024Mi
+        memory: 512Mi
 
     volumes:
       - name: server-certs
         secretName: api-gateway
         mountPath: /opt/certs/api-gateway
-        optional: false
+        optional: true
       - name: mtls-certs2
         secretName: mtls-certs2
         mountPath: /opt/certs/mtls2
