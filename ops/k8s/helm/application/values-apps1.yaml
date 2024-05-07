@@ -7,7 +7,7 @@ apps:
   apigateway:
     name: api-gateway
     image:
-      repository: ggruszecki/helm-accelerator
+      repository: ghcr.io/grzegorzgr/api-gateway
       # tag: api-gateway
 
     podAnnotations: {}
