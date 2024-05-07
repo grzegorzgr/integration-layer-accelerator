@@ -25,3 +25,10 @@ services:
       SERVER_SSL_ENABLED: 'false'
       URL_SERVICE_DEMO: $URL_SERVICE_DEMO
       URL_SERVICE_ERROR_HANDLING: $URL_SERVICE_DEMO
+
+  petstore-stub:
+    image: com.kainos/petstore-stub:0.0.1-SNAPSHOT
+    ports:
+      - "20001:8080"
+    environment:
+      JVM_OPTS: $JVM_OPTS

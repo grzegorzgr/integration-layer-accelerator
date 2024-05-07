@@ -7,7 +7,7 @@ logging:
     org.zalando.logbook: TRACE
 
 petstore:
-  url: http://localhost:8083
+  url: http://localhost:20001
 
 management:
   endpoint:

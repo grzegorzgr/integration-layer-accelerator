@@ -9,7 +9,7 @@ import LogRequestsController from './api/controllers/LogRequestsController';
 import FailController from './api/controllers/FailController';
 import PetstoreController from './api/controllers/PetstoreController';
 
-const port = 8083;
+const port = 8080;
 
 const logRequestsController = new LogRequestsController();
 const failController = new FailController();
