@@ -32,8 +32,13 @@ jobs:
 
       - name: Build docker images
         run: |
-        SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        for a in `find ~/ops/docker/ -name "build-image.sh"`; do ./$a $SHORT_SHA; done
+          SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+          ls -lah
+          cd ./ops/docker/services
+          for a in `ls`
+            do cd $a && ./build-image.sh grzegorzgr/helm-accelerator:$a-$SHORT_SHA && cd ..;
+          done
+
 
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
