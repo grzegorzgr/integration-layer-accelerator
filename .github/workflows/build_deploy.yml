@@ -85,7 +85,7 @@ jobs:
         run: |
           SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
           kubectl create namespace $SHORT_SHA
-          kubectl create secret docker-registry regcred --docker-server=https://ghcr.io --docker-username=grzegorzgr --docker-password=$CR_PAT --docker-email=grzegorzgr@kainos.com
+          kubectl create secret docker-registry regcred --namespace $SHORT_SHA --docker-server=https://ghcr.io --docker-username=grzegorzgr --docker-password=$CR_PAT --docker-email=grzegorzgr@kainos.com 
 
   deploy-etcd:
       name: Deploy ETCD (bitnami)
