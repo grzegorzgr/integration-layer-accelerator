@@ -30,4 +30,4 @@ jobs:
     - name: Remove apps
       run: |
         SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        for a in `kubectl get ns --no-headers | grep acc`; do kubectl delete ns $a; done
+        for a in `kubectl get ns --no-headers | grep acc`; do echo kubectl delete ns $a; done
