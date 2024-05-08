@@ -7,6 +7,9 @@ services:
       - "10001:8080"
     environment:
       JVM_OPTS: $JVM_OPTS
+      KAFKA_BROKER: $URL_KAFKA_BROKER
+      KAFKA_SCHEMA_REGISTRY: $URL_KAFKA_SCHEMA_REGISTRY
+      ETCD_ENDPOINT: $URL_ETCD
 
   demo:
     image: com.kainos/demo:$DOCKER_TAG
@@ -15,6 +18,9 @@ services:
     environment:
       JVM_OPTS: $JVM_OPTS
       PETSTORE_URL: $URL_EXTERNAL_PETSTORE
+      KAFKA_BROKER: $URL_KAFKA_BROKER
+      KAFKA_SCHEMA_REGISTRY: $URL_KAFKA_SCHEMA_REGISTRY
+      ETCD_ENDPOINT: $URL_ETCD
 
   api-gateway:
     image: com.kainos/api-gateway:$DOCKER_TAG
@@ -24,7 +30,7 @@ services:
       JVM_OPTS: $JVM_OPTS
       SERVER_SSL_ENABLED: 'false'
       URL_SERVICE_DEMO: $URL_SERVICE_DEMO
-      URL_SERVICE_ERROR_HANDLING: $URL_SERVICE_DEMO
+      URL_SERVICE_ERROR_HANDLING: $URL_SERVICE_ERROR_HANDLING
 
   petstore-stub:
     image: com.kainos/petstore-stub:0.0.1-SNAPSHOT

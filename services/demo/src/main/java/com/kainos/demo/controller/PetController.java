@@ -1,6 +1,7 @@
 package com.kainos.demo.controller;
 
 import static org.springframework.http.HttpStatus.ACCEPTED;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
@@ -27,14 +28,14 @@ import jakarta.validation.Valid;
 @RequestMapping("/pets")
 public class PetController {
 
+    @Value("${kafka.topics.internalPets}")
+    private String kafkaTopicsInternalPets;
+
     @Autowired
     public PetService petService;
 
     @Autowired
     private KafkaProducer kafkaProducer;
-
-    @Value("${kafka.topics.internalPets}")
-    private String kafkaTopicsInternalPets;
 
     @ResponseStatus(OK)
     @GetMapping
@@ -42,7 +43,7 @@ public class PetController {
         return petService.getPets();
     }
 
-    @ResponseStatus(ACCEPTED)
+    @ResponseStatus(CREATED)
     @ResponseBody
     @PostMapping
     public CreatePetResponse createPets(@Valid @RequestBody PetRequest petRequest) {
@@ -51,12 +52,12 @@ public class PetController {
 
     @ResponseStatus(ACCEPTED)
     @PostMapping("/async")
-    public void createPetsAsync(@Valid @RequestBody Pet pet) {
-        com.kainos.pets.avro.Pet petAvro = com.kainos.pets.avro.Pet.newBuilder()
-            .setName(pet.getName())
-            .setTag(pet.getTag())
+    public void createPetsAsync(@Valid @RequestBody PetRequest petRequest) {
+        com.kainos.pets.avro.PetRequest petRequestAvro = com.kainos.pets.avro.PetRequest.newBuilder()
+            .setName(petRequest.getName())
+            .setTag(petRequest.getTag())
             .build();
 
-        kafkaProducer.send(kafkaTopicsInternalPets, pet.getId().toString(), petAvro);
+        kafkaProducer.send(kafkaTopicsInternalPets, petRequest.getName(), petRequestAvro);
     }
 }

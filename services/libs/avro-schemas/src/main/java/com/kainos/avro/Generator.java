@@ -22,7 +22,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.kainos.avro.conversion.LocalDateTimeConversion;
 import com.kainos.avro.source.ErrorEvent;
-import com.kainos.pets.api.model.Pet;
+import com.kainos.pets.api.model.PetRequest;
+import com.kainos.petstore.model.Pet;
 
 public class Generator {
     private static final String AVRO_LIBS_DIR = "../avro-schemas/src/main/avro/";
@@ -33,6 +34,7 @@ public class Generator {
         ReflectData reflectData = getReflectData();
 
         Map<Class, String> sourcePojos = ofEntries(
+            entry(PetRequest.class, "PetRequest.avsc"),
             entry(Pet.class, "Pet.avsc"),
             entry(ErrorEvent.class, "ErrorEvent.avsc")
         );
@@ -83,7 +85,8 @@ public class Generator {
         return schema
             .replaceAll(ENUM_WITH_NAMESPACE_REGEXP, "$1$2Enums$3")
             .replace("com.kainos.avro.source", COMMON_AVRO)
-            .replace("com.kainos.pets.api.model", "com.kainos.pets.avro");
+            .replace("com.kainos.pets.api.model", "com.kainos.pets.avro")
+            .replace("com.kainos.petstore.model", "com.kainos.petstore.avro");
     }
 
     private static String toPrettyFormat(String jsonString) {
