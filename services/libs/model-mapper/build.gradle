@@ -7,3 +7,7 @@ repositories {
 dependencies {
     implementation "org.apache.commons:commons-collections4:${APACHE_COMMONS_COLLECTIONS4_VERSION}"
 }
+
+dependencies {
+    api "org.modelmapper:modelmapper:${MODEL_MAPPER_VERSION}"
+}

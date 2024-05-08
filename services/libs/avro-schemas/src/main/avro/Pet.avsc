@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "Pet",
-  "namespace": "com.kainos.petstore.avro",
+  "namespace": "com.kainos.pets.avro",
   "fields": [
     {
       "name": "id",

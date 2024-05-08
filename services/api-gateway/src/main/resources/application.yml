@@ -58,6 +58,14 @@ spring:
           filters:
             - PrefixPathWhenNeeded
 
+        - id: example-post-async
+          uri: ${url.service.demo}
+          predicates:
+            - Path=/pets/async
+            - Method=POST
+          filters:
+            - PrefixPathWhenNeeded
+
         - id: example-get
           uri: ${url.service.demo}
           predicates:

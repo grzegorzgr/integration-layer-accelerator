@@ -34,16 +34,14 @@ services:
       JVM_OPTS: $JVM_OPTS
 
   etcd:
-    image: quay.io/coreos/etcd:v3.1.10
-    restart: always
+    image: bitnami/etcd:3.5.13
     ports:
-      - "2378:2379"
+      - "2379:2379"
+      - "2380:2380"
     environment:
       ETCD_NAME: node
-      ETCD_DATA_DIR: /etcd-data/etcd.etcd
       ETCDCTL_API: 3
-      ETCD_DEBUG: 1
-      ETCD_LISTEN_CLIENT_URLS: http://0.0.0.0:2378
+      ALLOW_NONE_AUTHENTICATION: 'yes'
       ETCD_ADVERTISE_CLIENT_URLS: $URL_ETCD
 
   zookeeper:

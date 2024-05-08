@@ -1,15 +1,8 @@
 package com.kainos.avro;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.kainos.avro.conversion.LocalDateTimeConversion;
-import com.kainos.avro.source.ErrorEvent;
-import com.kainos.petstore.model.Pet;
-
-import org.apache.avro.reflect.ReflectData;
-import org.springframework.util.FileSystemUtils;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Map.entry;
+import static java.util.Map.ofEntries;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,9 +13,16 @@ import java.io.Writer;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Map.entry;
-import static java.util.Map.ofEntries;
+import org.apache.avro.reflect.ReflectData;
+import org.springframework.util.FileSystemUtils;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.kainos.avro.conversion.LocalDateTimeConversion;
+import com.kainos.avro.source.ErrorEvent;
+import com.kainos.pets.api.model.Pet;
 
 public class Generator {
     private static final String AVRO_LIBS_DIR = "../avro-schemas/src/main/avro/";
@@ -79,11 +79,11 @@ public class Generator {
     }
 
     private static String getSchemaForClass(ReflectData reflectData, Type type) {
-        String businessPartnerSchema = reflectData.getSchema(type).toString();
-        return businessPartnerSchema
+        String schema = reflectData.getSchema(type).toString();
+        return schema
             .replaceAll(ENUM_WITH_NAMESPACE_REGEXP, "$1$2Enums$3")
             .replace("com.kainos.avro.source", COMMON_AVRO)
-            .replace("com.kainos.petstore.model", "com.kainos.petstore.avro");
+            .replace("com.kainos.pets.api.model", "com.kainos.pets.avro");
     }
 
     private static String toPrettyFormat(String jsonString) {

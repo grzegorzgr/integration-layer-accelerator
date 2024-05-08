@@ -2,6 +2,7 @@ apply plugin: "java-library"
 
 dependencies {
     api project(":api-models")
+    api project(":petstore-models")
 
     api "com.google.code.gson:gson"
     api "org.apache.commons:commons-collections4:${APACHE_COMMONS_COLLECTIONS4_VERSION}"

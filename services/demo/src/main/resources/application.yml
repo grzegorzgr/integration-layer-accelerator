@@ -1,10 +1,4 @@
-spring:
-  application:
-    name: demo
-
-logging:
-  level:
-    org.zalando.logbook: TRACE
+spring.application.name: demo
 
 petstore:
   url: http://localhost:20001
@@ -21,3 +15,61 @@ management:
     web:
       exposure:
         include: "*"
+
+kafka:
+  broker: localhost:9093
+  schema_registry: http://localhost:8081
+  topics:
+    internalPets: internalPets
+    pets: pets
+  defaultTopicNumPartitions: 1
+  defaultTopicReplicationFactor: 1
+
+spring:
+  kafka:
+    properties:
+      security:
+        protocol: SSL
+    producer:
+      bootstrap-servers: ${kafka.broker}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      acks: all
+      properties:
+        schema:
+          registry:
+            url: ${kafka.schema_registry}
+    consumer:
+      bootstrap-servers: ${kafka.broker}
+      group-id: error-handling-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      properties:
+        schema:
+          registry:
+            url: ${kafka.schema_registry}
+        specific:
+          avro:
+            reader: true
+      max-poll-records: 1
+    ssl:
+      key-store-password: i5b85JTcEK5r5JgZ
+      trust-store-password: i5b85JTcEK5r5JgZ
+
+etcd:
+  endpoint: http://localhost:2379
+
+logback:
+  kafka:
+    broker: ${kafka.broker}
+    schema_registry: ${kafka.schema_registry}
+
+logging:
+  level:
+    com.nexigroup.ms.logging.LoggingInterceptorLogEventSender: DEBUG
+    com.nexigroup.ms.logging.KafkaConsumerLoggingInterceptor: DEBUG
+    org.zalando.logbook: TRACE
+
+global:
+  redactor:
+    enabled: true

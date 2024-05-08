@@ -18,7 +18,7 @@ dependencies {
 
 def openApiYamlNames = [
         // In order to add another OpenAPI 3.0 Contract simply append another record after comma
-        [file: "KainosPetsApi", model: "com.kainos.pets.api.model"]
+        [file: "Petstore", model: "com.kainos.petstore.model"]
 ]
 
 openApiYamlNames.each {

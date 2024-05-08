@@ -9,6 +9,9 @@ apply plugin: 'org.springframework.boot'
 dependencies {
     implementation project(":api-models")
     implementation project(":tracing")
+    implementation project(":kafka-core")
+    implementation project(":error-handling-lib")
+    implementation project(":model-mapper")
 
     implementation "io.micrometer:micrometer-registry-prometheus"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
@@ -19,10 +22,4 @@ dependencies {
     implementation "io.github.openfeign:feign-httpclient:${FEIGN_HTTP_CLIENT_VERSION}"
     implementation "org.springframework.cloud:spring-cloud-dependencies:${SPRING_CLOUD_DEPENDENCIES_VERSION}"
     implementation "org.springframework.cloud:spring-cloud-starter-openfeign:${SPRING_CLOUD_OPENFEIGN_VERSION}"
-
-
-    testImplementation "junit:junit"
-    testImplementation "org.assertj:assertj-core"
-    testImplementation "org.springframework.boot:spring-boot-starter-test"
-    testImplementation "io.rest-assured:rest-assured"
 }
