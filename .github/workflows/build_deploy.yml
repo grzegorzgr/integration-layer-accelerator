@@ -220,7 +220,7 @@ jobs:
         helm upgrade --install --namespace ${GITHUB_REF##*/} \
         -f ./ops/k8s/helm/application/values-apps1.yaml -f ./ops/k8s/helm/application/values-common.yaml --set tag=${GITHUB_REF##*/} api-gateway-${GITHUB_REF##*/} ./ops/k8s/helm/application
 
-        helm upgrade --install --namespace main --values ./ops/k8s/helm/application/values-stubs.yaml --values ./ops/k8s/helm/application/values-common.yaml --set "tag=${GITHUB_REF##*/},livenessProbe.httpGet.path=/" stubs-${GITHUB_REF##*/} ./ops/k8s/helm/application/
+        helm upgrade --install --namespace ${GITHUB_REF##*/} --values ./ops/k8s/helm/application/values-stubs.yaml --values ./ops/k8s/helm/application/values-common.yaml --set "tag=${GITHUB_REF##*/},livenessProbe.httpGet.path=/pets" stubs-${GITHUB_REF##*/} ./ops/k8s/helm/application/
 
         helm upgrade --install --namespace ${GITHUB_REF##*/} \
         -f ./ops/k8s/helm/application/values-schema.yaml -f ./ops/k8s/helm/application/values-common.yaml --set "livenessProbe.httpGet.path=/,livenessProbe.httpGet.port=8081" schema-${GITHUB_REF##*/} ./ops/k8s/helm/application
