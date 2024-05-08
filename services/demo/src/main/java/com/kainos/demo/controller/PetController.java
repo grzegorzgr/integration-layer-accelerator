@@ -26,13 +26,13 @@ public class PetController {
     @Autowired
     private PetstoreClient petstoreClient;
 
-    @ResponseStatus(ACCEPTED)
+    @ResponseStatus(OK)
     @GetMapping
     public List<Pet> listPets() {
         return petstoreClient.getPets();
     }
 
-    @ResponseStatus(OK)
+    @ResponseStatus(ACCEPTED)
     @PostMapping
     public void createPets(@Valid @RequestBody Pet pet) {
         petstoreClient.createPets(pet);
