@@ -17,6 +17,12 @@ apps:
       port: 8080
 
     extraEnv:
+    - name: ETCD_ENDPOINT
+      value: "http://etcd-main:2379"
+    - name: SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL
+      value: "PLAINTEXT"
+    - name: KAFKA_BROKER
+      value: "kafka-main-headless:9092"
     - name: PETSTORE_URL
       value: "https://petstore-stub-svc:8080"
 
