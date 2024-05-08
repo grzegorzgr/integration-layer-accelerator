@@ -25,6 +25,8 @@ apps:
       value: "_schemas"
     - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
       value: "PLAINTEXT://kafka-main-headless:9092"
+    - name: SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL
+      value: "PLAINTEXT"
 
     resources:
       limits:
