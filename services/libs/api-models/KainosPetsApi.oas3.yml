@@ -68,6 +68,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /pets/async:
+    post:
+      summary: Create a pet
+      operationId: createPetAsync
+      tags:
+        - pets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PetRequest'
+        required: true
+      responses:
+        '202':
+          description: accepted
 components:
   schemas:
     Pet:
