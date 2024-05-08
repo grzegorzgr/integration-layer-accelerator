@@ -122,12 +122,22 @@ components:
           format: int64
     ErrorResponse:
       type: object
-      required:
-        - code
-        - message
       properties:
         code:
           type: integer
           format: int32
+        key:
+          type: string
+        traceId:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+    Error:
+      type: object
+      properties:
         message:
+          type: string
+        path:
           type: string

@@ -1,4 +1,5 @@
 com.kainos.exception.GlobalKafkaListenerExceptionErrorHandler
+com.kainos.exception.GlobalControllerExceptionHandler
 com.kainos.errorreporting.ErrorReporter
 com.kainos.ErrorHandlingPropertiesConfiguration
 com.kainos.consumermanagement.ConsumerManagementConfiguration

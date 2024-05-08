@@ -5,7 +5,7 @@ import lombok.Builder;
 public class UnknownException extends CustomException {
 
     @Builder
-    public UnknownException(Throwable cause, String message, String errorCode, String businessIds) {
-        super(cause, message, errorCode, businessIds);
+    public UnknownException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
