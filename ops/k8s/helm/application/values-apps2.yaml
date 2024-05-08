@@ -24,7 +24,7 @@ apps:
     - name: KAFKA_BROKER
       value: "kafka-main-headless:9092"
     - name: PETSTORE_URL
-      value: "https://petstore-stub-svc:8080"
+      value: "http://petstore-stub-svc:8080"
 
     resources:
       limits:
