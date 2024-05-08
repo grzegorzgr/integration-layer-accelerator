@@ -32,3 +32,59 @@ services:
       - "20001:8080"
     environment:
       JVM_OPTS: $JVM_OPTS
+
+  etcd:
+    image: quay.io/coreos/etcd:v3.1.10
+    restart: always
+    ports:
+      - "2378:2379"
+    environment:
+      ETCD_NAME: node
+      ETCD_DATA_DIR: /etcd-data/etcd.etcd
+      ETCDCTL_API: 3
+      ETCD_DEBUG: 1
+      ETCD_LISTEN_CLIENT_URLS: http://0.0.0.0:2378
+      ETCD_ADVERTISE_CLIENT_URLS: $URL_ETCD
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.5.1
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      KAFKA_HEAP_OPTS: $KAFKA_HEAP_OPTS
+
+  broker:
+    image: confluentinc/cp-kafka:5.5.1
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: $URL_ZOOKEEPER
+      KAFKA_ADVERTISED_LISTENERS: SSL://broker:9093,PLAINTEXT://broker:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_HEAP_OPTS: $KAFKA_HEAP_OPTS
+      KAFKA_SSL_KEYSTORE_FILENAME: broker.keystore.jks
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: keycredential
+      KAFKA_SSL_TRUSTSTORE_FILENAME: broker.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: keycredential
+      KAFKA_SSL_KEY_CREDENTIALS: keycredential
+      KAFKA_MESSAGE_MAX_BYTES: 52428800
+    volumes:
+      - ./../tls/kafka/broker.keystore.jks:/etc/kafka/secrets/broker.keystore.jks
+      - ./../tls/kafka/broker.truststore.jks:/etc/kafka/secrets/broker.truststore.jks
+      - ./../tls/kafka/keycredential:/etc/kafka/secrets/keycredential
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:5.5.1
+    depends_on:
+      - zookeeper
+      - broker
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: '$URL_ZOOKEEPER'
+      SCHEMA_REGISTRY_CUB_KAFKA_TIMEOUT: 80
