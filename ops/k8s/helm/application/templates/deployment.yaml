@@ -6,6 +6,7 @@ kind: Deployment
 metadata:
   name: {{ .name }}
   labels:
+    app: {{ .name }}
     managed-by: Helm
     release: {{ $.Release.Name }}
     version: {{ $.Values.tag }}
