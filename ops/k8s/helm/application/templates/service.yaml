@@ -16,5 +16,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    name: {{ .name }}
+    release: {{ $.Release.Name }}
 {{ end }}
