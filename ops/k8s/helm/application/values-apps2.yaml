@@ -17,7 +17,7 @@ apps:
       port: 8080
 
     extraEnv:
-    - name: PESTSORE_URL
+    - name: PETSSTORE_URL
       value: "https://petstore-stub-svc:8080"
 
     resources:
