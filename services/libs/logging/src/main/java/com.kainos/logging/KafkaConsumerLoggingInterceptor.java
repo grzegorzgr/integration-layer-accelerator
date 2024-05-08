@@ -2,6 +2,8 @@ package com.kainos.logging;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import static com.kainos.mapper.SafeMapper.nullSafe;
+
 import java.util.Map;
 
 import org.apache.avro.specific.SpecificRecordBase;
@@ -55,7 +57,7 @@ public class KafkaConsumerLoggingInterceptor implements ConsumerInterceptor<Stri
             .lastHeader(headerName.toLowerCase());
 
         if (header != null) {
-            headerValue = new String(header.value(), UTF_8);
+            headerValue = nullSafe(() -> new String(header.value(), UTF_8));
         }
 
         return headerValue;

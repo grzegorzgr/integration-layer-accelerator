@@ -28,7 +28,7 @@ public class PetConsumer {
 
     @KafkaListener(topics = "${kafka.topics.internalPets}", clientIdPrefix = CONSUMER_GROUP_ID, id = CONSUMER_GROUP_ID)
     public void listen(ConsumerRecord<String, com.kainos.pets.avro.PetRequest> record) {
-        PetRequest petRequest = MODEL_MAPPER.map(record, PetRequest.class);
+        PetRequest petRequest = MODEL_MAPPER.map(record.value(), PetRequest.class);
         Long createdPetId = petService.createPet(petRequest).getId();
         com.kainos.petstore.avro.Pet petAvro = com.kainos.petstore.avro.Pet.newBuilder()
             .setId(createdPetId)

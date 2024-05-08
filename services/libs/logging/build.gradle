@@ -10,6 +10,7 @@ dependencies {
     api project(":logback-config")
     api project(":tracing")
     api project(":exceptions")
+    api project(":model-mapper")
 
     api "org.springframework:spring-web"
     api "org.springframework.boot:spring-boot-starter"

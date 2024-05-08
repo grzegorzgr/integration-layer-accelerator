@@ -41,7 +41,7 @@ spring:
             url: ${kafka.schema_registry}
     consumer:
       bootstrap-servers: ${kafka.broker}
-      group-id: error-handling-group
+      group-id: demo-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
       properties:
