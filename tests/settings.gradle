@@ -6,4 +6,6 @@ pluginManagement {
 }
 
 rootProject.name = 'tests'
+include ':api-models'
 
+project(":api-models").projectDir = new File("../services/libs/api-models")
