@@ -6,28 +6,6 @@ static String fixEmailFormat(String line) {
             : line
 }
 
-static String fixEnumNameFormat(String line) {
-    return line.contains('ENUM_START')
-            ? line
-            .replaceAll("\\s*ENUM_START", "ENUM_START")
-            .replaceAll("\\s", "_")
-            .replaceAll("-", "_")
-            .replaceAll("\\.", "_")
-            .replaceAll(",", "_")
-            .replaceAll(":", "_")
-            .replaceAll("/", "_")
-            .replaceAll("ENUM_START\"#", "ENUM_START\"_")
-            .replaceAll("ENUM_START\"\"ENUM_END", "ENUM_START\"EMPTY\"ENUM_END")
-            .replaceAll("ENUM_START\"&", "ENUM_START\"AMPE_")
-            .replaceAll("ENUM_START\"!", "ENUM_START\"EXCL_")
-            .replaceAll("ENUM_START\"\\^", "ENUM_START\"CARET_")
-            .replaceAll("ENUM_START\"new", "ENUM_START\"_new")
-            .replaceAll("ENUM_START\"([0-9])", "ENUM_START\"_\$1")
-            .replaceAll("ENUM_START\"", "")
-            .replaceAll("\"ENUM_END", "")
-            : line
-}
-
 static String addJavaxAnnotation(String line) {
     if (line.contains('@Pattern')) {
         int startPatternIndex =  line.indexOf("Pattern(regexp=\"")
@@ -82,28 +60,6 @@ static String addJavaxAnnotation(String line) {
     } else {
         return line;
     }
-}
-
-static String fixEnumNameReportsFormat(String line) {
-    return line.contains('ENUM_START')
-            ? line
-            .replaceAll("\\s*ENUM_START", "ENUM_START")
-            .replaceAll("\\s", "_")
-            .replaceAll("-", "_")
-            .replaceAll("\\.", "_")
-            .replaceAll(",", "_")
-            .replaceAll(":", "_")
-            .replaceAll("/", "_")
-            .replaceAll("ENUM_START\"#", "ENUM_START\"_")
-            .replaceAll("ENUM_START\"\"ENUM_END", "ENUM_START\"EMPTY\"ENUM_END")
-            .replaceAll("ENUM_START\"&", "ENUM_START\"_")
-            .replaceAll("ENUM_START\"!", "ENUM_START\"_")
-            .replaceAll("ENUM_START\"\\^", "ENUM_START\"_")
-            .replaceAll("ENUM_START\"new", "ENUM_START\"_new")
-            .replaceAll("ENUM_START\"([0-9])", "ENUM_START\"_\$1")
-            .replaceAll("ENUM_START\"", "")
-            .replaceAll("\"ENUM_END", "")
-            : line
 }
 
 Closure getSwaggerSourceConfiguration(file, modelPackage, buildDir, validation) {
