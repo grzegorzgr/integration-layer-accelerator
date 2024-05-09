@@ -25,7 +25,7 @@ public class PetStoreSteps {
     @Given("add new pet request is prepared")
     public void newPetIsPrepared() {
         PetRequest petRequest = PetDataBuilder.preparePetRequest();
-        TestDataSerenity.set(TRACE_ID, traceId());
+        traceId();
         TestDataSerenity.set(PET_REQUEST, petRequest);
     }
 
