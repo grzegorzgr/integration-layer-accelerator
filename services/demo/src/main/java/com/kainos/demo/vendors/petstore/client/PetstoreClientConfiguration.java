@@ -25,10 +25,8 @@ import org.springframework.core.io.Resource;
 import com.kainos.tracing.TraceIdFeignClientRequestInterceptor;
 
 import feign.Client;
-import feign.Logger;
 import feign.RequestInterceptor;
 import feign.httpclient.ApacheHttpClient;
-import feign.slf4j.Slf4jLogger;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

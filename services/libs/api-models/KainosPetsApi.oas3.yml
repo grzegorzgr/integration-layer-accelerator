@@ -111,7 +111,7 @@ components:
       type: array
       maxItems: 100
       items:
-        $ref: "#/components/schemas/Pet"
+        $ref: '#/components/schemas/Pet'
     CreatePetResponse:
       type: object
       required:

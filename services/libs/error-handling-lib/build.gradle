@@ -17,4 +17,5 @@ dependencies {
 
     api "org.springframework.boot:spring-boot-starter-actuator"
     api "io.zipkin.brave:brave-instrumentation-kafka-clients:${BRAVE_INSTRUMENTATION_KAFKA_CLIENTS_VERSION}"
+    api "org.springframework.cloud:spring-cloud-starter-openfeign:${SPRING_CLOUD_OPENFEIGN_VERSION}"
 }

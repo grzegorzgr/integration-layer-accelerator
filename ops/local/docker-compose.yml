@@ -76,7 +76,6 @@ services:
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: keycredential
       KAFKA_SSL_KEY_CREDENTIALS: keycredential
       KAFKA_MESSAGE_MAX_BYTES: 52428800
-      KAFKA_LOG_CLEANUP_POLICY: compact
     volumes:
       - ./../tls/kafka/broker.keystore.jks:/etc/kafka/secrets/broker.keystore.jks
       - ./../tls/kafka/broker.truststore.jks:/etc/kafka/secrets/broker.truststore.jks

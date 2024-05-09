@@ -37,6 +37,7 @@ import com.kainos.pets.api.model.Error;
 import com.kainos.pets.api.model.ErrorResponse;
 import com.kainos.tracing.TraceContextProvider;
 
+import feign.RetryableException;
 import lombok.extern.slf4j.Slf4j;
 
 @ControllerAdvice
@@ -172,6 +173,14 @@ public class GlobalControllerExceptionHandler extends ExceptionHandlerExceptionR
         String message = extractFullMessageFromException(exception);
         logException(exception);
         return createErrorResponse(REQUEST_METHOD_NOT_SUPPORTED_MESSAGE, message, METHOD_NOT_ALLOWED.value());
+    }
+
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(RetryableException.class)
+    @ResponseBody
+    public ErrorResponse handleRetryableException(RetryableException exception) {
+        logException(exception);
+        return createErrorResponse(REQUEST_FAILED_MESSAGE, exception, INTERNAL_SERVER_ERROR.value());
     }
 
     /**

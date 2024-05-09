@@ -29,6 +29,7 @@ import com.kainos.errorreporting.ErrorReporter;
 import com.kainos.tracing.TraceContextProvider;
 
 import brave.kafka.clients.TracingConsumerIdExtractor;
+import feign.RetryableException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -116,11 +117,18 @@ public class GlobalKafkaListenerExceptionErrorHandler extends DefaultErrorHandle
         Throwable nestedCause = e.getCause();
 
         if (e instanceof ListenerExecutionFailedException ex) {
-            nestedCause = nullSafe(() -> e.getCause().getCause());
+            nestedCause = nullSafe(() -> ex.getCause().getCause());
         }
 
         if (nestedCause instanceof CustomException customException) {
             return customException;
+        }
+
+        if (nestedCause instanceof RetryableException ex) {
+            return TechnicalException.builder()
+                .cause(ex.getCause())
+                .message(ex.getCause().getMessage())
+                .build();
         } else {
             return UnknownException.builder()
                 .cause(e)
