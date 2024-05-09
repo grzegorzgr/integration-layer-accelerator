@@ -2,5 +2,6 @@ package tests.model;
 
 public enum TestDataKeys {
     TRACE_ID,
-    PET
+    PET_REQUEST,
+    CREATE_PET_RESPONSE
 }

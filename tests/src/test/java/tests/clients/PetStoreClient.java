@@ -3,9 +3,8 @@ package tests.clients;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 
-import org.springframework.http.HttpStatus;
-
-import com.kainos.petstore.model.Pet;
+import com.kainos.pets.api.model.CreatePetResponse;
+import com.kainos.pets.api.model.PetRequest;
 
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -17,16 +16,17 @@ public class PetStoreClient {
     private static final String ADD_PET = "/pets";
     private static final String GET_PETS = "/pets";
 
-    public void addPet(Pet pet, String traceId, int expectedStatusCode) {
-        given()
+    public CreatePetResponse addPet(PetRequest petRequest, String traceId, int expectedStatusCode) {
+       return given()
             .baseUri(TEST_SETTINGS.getProperty("api.gateway_url"))
             .header("trace-id", traceId)
             .when()
             .contentType(JSON)
-            .body(pet)
+            .body(petRequest)
             .post(ADD_PET)
             .then()
-            .statusCode(expectedStatusCode);
+            .statusCode(expectedStatusCode)
+            .extract().response().as(CreatePetResponse.class);
     }
 
     public Response getPets(String traceId) {

@@ -1,11 +1,13 @@
 package tests.steps;
 
-import static tests.model.TestDataKeys.PET;
+import static tests.model.TestDataKeys.CREATE_PET_RESPONSE;
+import static tests.model.TestDataKeys.PET_REQUEST;
 import static tests.model.TestDataKeys.TRACE_ID;
 import static tests.utils.TestDataSerenity.traceId;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.kainos.petstore.model.Pet;
+import com.kainos.pets.api.model.CreatePetResponse;
+import com.kainos.pets.api.model.PetRequest;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -20,25 +22,27 @@ public class PetStoreSteps {
     private final PetStoreClient petStoreClient = new PetStoreClient();
     private final PetStoreValidator petStoreValidator = new PetStoreValidator();
 
-    @Given("new pet is prepared")
+    @Given("add new pet request is prepared")
     public void newPetIsPrepared() {
-        Pet pet = PetDataBuilder.preparePet();
+        PetRequest petRequest = PetDataBuilder.preparePetRequest();
         TestDataSerenity.set(TRACE_ID, traceId());
-        TestDataSerenity.set(PET, pet);
+        TestDataSerenity.set(PET_REQUEST, petRequest);
     }
 
     @When("add new pet endpoint is called and gets {int}")
     public void newPetEndpointIsCalledAndGets(int expectedStatusCode) {
-        Pet pet = TestDataSerenity.get(PET, Pet.class);
+        PetRequest petRequest = TestDataSerenity.get(PET_REQUEST, PetRequest.class);
         String traceId = TestDataSerenity.get(TRACE_ID, String.class);
-        petStoreClient.addPet(pet, traceId, expectedStatusCode);
+        CreatePetResponse createPetResponse = petStoreClient.addPet(petRequest, traceId, expectedStatusCode);
+        TestDataSerenity.set(CREATE_PET_RESPONSE, createPetResponse);
     }
 
     @Then("new pet is added")
     public void newPetIsAdded() throws JsonProcessingException {
         String traceId = TestDataSerenity.get(TRACE_ID, String.class);
-        Pet pet = TestDataSerenity.get(PET, Pet.class);
+        PetRequest petRequest = TestDataSerenity.get(PET_REQUEST, PetRequest.class);
+        CreatePetResponse createPetResponse = TestDataSerenity.get(CREATE_PET_RESPONSE, CreatePetResponse.class);
         Response response = petStoreClient.getPets(traceId);
-        petStoreValidator.validateNewPetIsAdded(response, pet);
+        petStoreValidator.validateNewPetIsAdded(response, petRequest, createPetResponse);
     }
 }
