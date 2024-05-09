@@ -35,6 +35,6 @@ public class PetService {
     }
 
     private Long generateId() {
-        return new Random().nextLong();
+        return new Random().nextLong(1L, 1000L);
     }
 }
