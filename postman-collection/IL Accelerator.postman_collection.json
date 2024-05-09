@@ -192,6 +192,91 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Petstore stub - force fail",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"traceId\": \"1\",\n  \"requestName\": \"createPets\",\n  \"statusCode\": 500\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:20001/requests/fail",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "20001",
+					"path": [
+						"requests",
+						"fail"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Petstore stub - get saved requests",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:20001/requests/createPets/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "20001",
+					"path": [
+						"requests",
+						"createPets",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Petstore stub - create Pet",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "TRACE-ID",
+						"value": "1",
+						"type": "text",
+						"uuid": "d4026149-6952-4ebb-a97e-f7dab98429db"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 1,\n    \"name\": \"test\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:20001/pets",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "20001",
+					"path": [
+						"pets"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

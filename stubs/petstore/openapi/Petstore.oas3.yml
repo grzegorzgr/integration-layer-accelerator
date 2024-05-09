@@ -60,6 +60,45 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /requests/fail:
+    post:
+      summary: Custome endpoint to force stub to fail
+      operationId: forceStubFail
+      tags:
+        - custom
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        '200':
+          description: Null response
+  /requests/{objectType}/{traceId}:
+    get:
+      summary: Custome endpoint to fetching saved incomming requests
+      operationId: fetchIncommingRequests
+      tags:
+        - custom
+      parameters:
+        - in: path
+          name: objectType
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: traceId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Incomming requests
+          content:
+            application/json:
+              schema:
+                type: array
 components:
   schemas:
     Pet:
