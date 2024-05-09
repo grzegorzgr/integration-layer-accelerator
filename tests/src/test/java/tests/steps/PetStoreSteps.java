@@ -9,6 +9,8 @@ import static tests.model.TestDataKeys.PET_REQUEST;
 import static tests.model.TestDataKeys.TRACE_ID;
 import static tests.utils.TestDataSerenity.traceId;
 
+import java.util.List;
+
 import org.apache.http.HttpStatus;
 import org.json.JSONException;
 
