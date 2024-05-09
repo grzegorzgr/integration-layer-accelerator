@@ -1,26 +1,37 @@
 package tests.steps;
 
 import static tests.model.TestDataKeys.CREATE_PET_RESPONSE;
+import static tests.model.TestDataKeys.GET_PETS_RESPONSE;
 import static tests.model.TestDataKeys.PET_REQUEST;
 import static tests.model.TestDataKeys.TRACE_ID;
 import static tests.utils.TestDataSerenity.traceId;
 
+import java.util.List;
+
+import org.json.JSONException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kainos.pets.api.model.CreatePetResponse;
 import com.kainos.pets.api.model.PetRequest;
+import com.kainos.petstore.model.Pet;
 
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
+import tests.clients.KafkaConsumerClient;
 import tests.clients.PetStoreClient;
 import tests.utils.TestDataSerenity;
 import tests.utils.databuilders.PetDataBuilder;
+import tests.validators.KafkaValidator;
 import tests.validators.PetStoreValidator;
 
 public class PetStoreSteps {
     private final PetStoreClient petStoreClient = new PetStoreClient();
     private final PetStoreValidator petStoreValidator = new PetStoreValidator();
+    private final KafkaConsumerClient kafkaConsumerClient = new KafkaConsumerClient();
+    private final KafkaValidator kafkaValidator = new KafkaValidator();
 
     @Given("add new pet request is prepared")
     public void newPetIsPrepared() {
@@ -34,6 +45,7 @@ public class PetStoreSteps {
         PetRequest petRequest = TestDataSerenity.get(PET_REQUEST, PetRequest.class);
         String traceId = TestDataSerenity.get(TRACE_ID, String.class);
         CreatePetResponse createPetResponse = petStoreClient.addPet(petRequest, traceId, expectedStatusCode);
+        petStoreClient.addPet(petRequest, traceId, expectedStatusCode);
         TestDataSerenity.set(CREATE_PET_RESPONSE, createPetResponse);
     }
 
@@ -43,6 +55,22 @@ public class PetStoreSteps {
         PetRequest petRequest = TestDataSerenity.get(PET_REQUEST, PetRequest.class);
         CreatePetResponse createPetResponse = TestDataSerenity.get(CREATE_PET_RESPONSE, CreatePetResponse.class);
         Response response = petStoreClient.getPets(traceId);
+        TestDataSerenity.set(GET_PETS_RESPONSE, response);
         petStoreValidator.validateNewPetIsAdded(response, petRequest, createPetResponse);
+    }
+
+    @And("message is sent to {} kafka topic")
+    public void messageIsSentToInternalPetsKafkaTopic(String kafkaTopic) throws JsonProcessingException, JSONException {
+        String traceId = TestDataSerenity.get(TRACE_ID, String.class);
+        Response response = TestDataSerenity.get(GET_PETS_RESPONSE, Response.class);
+        List<com.kainos.petstore.avro.Pet> petListMsgs = kafkaConsumerClient.getAllMsgsByTraceId(kafkaTopic, com.kainos.petstore.avro.Pet.getClassSchema(), traceId);
+        kafkaValidator.validatePetEventOnKafka(response, petListMsgs);
+    }
+
+    @When("add new pet async endpoint is called and gets {int}")
+    public void addNewPetAsyncEndpointIsCalledAndGets(int expectedStatusCode) {
+        PetRequest petRequest = TestDataSerenity.get(PET_REQUEST, PetRequest.class);
+        String traceId = TestDataSerenity.get(TRACE_ID, String.class);
+        petStoreClient.addPetAsync(petRequest, traceId, expectedStatusCode);
     }
 }

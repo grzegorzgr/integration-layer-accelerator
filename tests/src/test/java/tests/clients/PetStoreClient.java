@@ -13,11 +13,24 @@ import tests.utils.TestSettings;
 public class PetStoreClient {
 
     private static final TestSettings TEST_SETTINGS = TestSettings.getInstance();
+    private static final String ADD_PET_ASYNC = "/pets/async";
     private static final String ADD_PET = "/pets";
     private static final String GET_PETS = "/pets";
 
+    public void addPetAsync(PetRequest petRequest, String traceId, int expectedStatusCode) {
+        given()
+            .baseUri(TEST_SETTINGS.getProperty("api.gateway_url"))
+            .header("trace-id", traceId)
+            .when()
+            .contentType(JSON)
+            .body(petRequest)
+            .post(ADD_PET_ASYNC)
+            .then()
+            .statusCode(expectedStatusCode);
+    }
+
     public CreatePetResponse addPet(PetRequest petRequest, String traceId, int expectedStatusCode) {
-       return given()
+        return given()
             .baseUri(TEST_SETTINGS.getProperty("api.gateway_url"))
             .header("trace-id", traceId)
             .when()
