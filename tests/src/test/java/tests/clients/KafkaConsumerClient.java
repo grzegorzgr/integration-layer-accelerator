@@ -1,14 +1,17 @@
 package tests.clients;
 
+import static io.restassured.RestAssured.given;
 import static tests.utils.NullSafeTransformationUtil.nullSafe;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.avro.Schema;
 import org.apache.avro.specific.SpecificData;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.eclipse.jetty.http.HttpStatus;
 
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -26,6 +29,30 @@ public class KafkaConsumerClient {
     }
 
     private static final String TRACE_ID = "trace-id";
+    private static final String STOPPED_CUSTOMERS_LIST = "/operations-service/paused-consumers";
+    private static final String CONSUMER_RESUME = "/operations-service/paused-consumers/resume";
+    private static final TestSettings TEST_SETTINGS = TestSettings.getInstance();
+
+    public void sendResumeConsumerRequest(String consumerId, String traceId) {
+        given()
+            .baseUri(TEST_SETTINGS.getProperty("api.gateway.url"))
+            .header("TRACE-ID", traceId)
+            .queryParam("source", consumerId)
+            .when()
+            .post(CONSUMER_RESUME)
+            .then()
+            .statusCode(HttpStatus.OK_200);
+    }
+
+    public void sendResumeAllConsumersRequest(String traceId) {
+        given()
+            .baseUri(TEST_SETTINGS.getProperty("api.gateway_url"))
+            .header("TRACE-ID", traceId)
+            .when()
+            .post(CONSUMER_RESUME)
+            .then()
+            .statusCode(HttpStatus.OK_200);
+    }
 
     public <T extends SpecificRecordBase> List<T> getAllMsgsByTraceId(String topic, Schema avroSchema, String expectedTraceId) {
         Predicate<ConsumerRecord<String, T>> traceIdPredicate = record -> {
@@ -58,5 +85,17 @@ public class KafkaConsumerClient {
             .filter(consumerRecordPredicate)
             .map(record -> SpecificData.get().deepCopy(avroSchema, record.value()))
             .collect(Collectors.toList());
+    }
+
+    public List<ConsumersResponse> getConsumerPausedStatuses(String traceId) {
+        return Arrays.asList(given()
+            .baseUri(TEST_SETTINGS.getProperty("api.gateway_url"))
+            .header("TRACE-ID", traceId)
+            .when()
+            .get(STOPPED_CUSTOMERS_LIST)
+            .then()
+            .statusCode(HttpStatus.OK_200)
+            .extract()
+            .response().as(ConsumersResponse[].class));
     }
 }

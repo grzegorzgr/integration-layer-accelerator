@@ -10,3 +10,13 @@ Feature: PetStore
     When add new pet async endpoint is called and gets 202
     Then new pet is added
     And message is sent to pets kafka topic
+
+  Scenario: Add new pet - Negative test with paused consumer
+    Given add new pet request is prepared
+    And pet stub is instructed to fail on "createPets" call and respond 500
+    When add new pet async endpoint is called and gets 202
+    Then new pet is not added
+    And no message is sent to pets kafka topic
+    Then All consumers are resumed
+    Then new pet is added
+    And message is sent to pets kafka topic

@@ -25,6 +25,7 @@ import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 import tests.clients.KafkaConsumerClient;
 import tests.clients.PetStoreClient;
+import tests.model.RequestFailure;
 import tests.utils.TestDataSerenity;
 import tests.utils.databuilders.PetDataBuilder;
 import tests.validators.KafkaValidator;
@@ -64,6 +65,13 @@ public class PetStoreSteps {
         petStoreValidator.validateNewPetIsAdded(response, petRequest, createPetResponse, getCreatePetsRequests);
     }
 
+    @Then("new pet is not added")
+    public void newPetIsNotAdded() {
+        String traceId = TestDataSerenity.get(TRACE_ID, String.class);
+        await().until(() -> petStoreClient.getCreatePetsRequests(traceId),
+            res -> res.statusCode() == 404);
+    }
+
     @And("message is sent to {} kafka topic")
     public void messageIsSentToInternalPetsKafkaTopic(String kafkaTopic) throws JsonProcessingException, JSONException {
         String traceId = TestDataSerenity.get(TRACE_ID, String.class);
@@ -77,5 +85,30 @@ public class PetStoreSteps {
         PetRequest petRequest = TestDataSerenity.get(PET_REQUEST, PetRequest.class);
         String traceId = TestDataSerenity.get(TRACE_ID, String.class);
         petStoreClient.addPetAsync(petRequest, traceId, expectedStatusCode);
+    }
+
+    @And("pet stub is instructed to fail on {string} call and respond {int}")
+    public void petStubIsInstructedToFailOnCallAndRespond(String method, int httpStatusCode) {
+        RequestFailure failRequestCaps = RequestFailure.builder()
+            .requestName(method)
+            .statusCode(httpStatusCode)
+            .traceId(TestDataSerenity.traceId())
+            .build();
+        petStoreClient.instructPetStubToFail(failRequestCaps);
+    }
+
+    @And("no message is sent to {} kafka topic")
+    public void noMessageIsSentToPetsKafkaTopic(String kafkaTopic) {
+        String traceId = TestDataSerenity.get(TRACE_ID, String.class);
+        List<com.kainos.petstore.avro.Pet> petListMsgs = kafkaConsumerClient.getAllMsgsByTraceId(kafkaTopic,
+            com.kainos.petstore.avro.Pet.getClassSchema(), traceId);
+        kafkaValidator.kafkaMessageListIsEmpty(petListMsgs);
+    }
+
+    @Then("All consumers are resumed")
+    public void allConsumersAreResumed() {
+        String traceId = TestDataSerenity.get(TRACE_ID, String.class);
+        kafkaConsumerClient.sendResumeAllConsumersRequest(traceId);
+        await().until(kafkaValidator.allConsumersAreUp(kafkaConsumerClient.getConsumerPausedStatuses(traceId)));
     }
 }
