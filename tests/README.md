@@ -1,5 +1,5 @@
 
-##How to run e2e test
+## How to run e2e test
 
 e2e tests can be found in **helm-accelerator/tests** and are written using **Serenity with Cucumber BDD**. 
 Following plugins need to be installed:
