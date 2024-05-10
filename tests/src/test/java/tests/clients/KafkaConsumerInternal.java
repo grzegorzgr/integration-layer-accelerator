@@ -62,18 +62,6 @@ class KafkaConsumerInternal {
         }
     }
 
-    static <T> List<ConsumerRecord> pollAndGetAllMsgsFromTopic(String topic) {
-        sleep100Ms();
-
-        synchronized (KafkaConsumerInternal.class) {
-            KafkaConsumer<String, T> consumer = getExistingOrCreateKafkaJsonConsumerForTopic(topic);
-            ConsumerRecords<String, T> pollResult = singlePoll(topic, consumer);
-            List<ConsumerRecord> consumerRecords = processPollResult(pollResult, topic);
-            consumer.commitSync();
-            return consumerRecords;
-        }
-    }
-
     private static void sleep100Ms() {
         try {
             Thread.sleep(100);
@@ -111,24 +99,8 @@ class KafkaConsumerInternal {
         return records;
     }
 
-    @NotNull
-    private static <T> ConsumerRecords<String, T> singlePoll(String topic, KafkaConsumer<String, T> consumer) {
-        long currentTimeMillis = System.currentTimeMillis();
-        log.info("Poll start for topic {}", topic);
-        ConsumerRecords<String, T> records = consumer.poll(Duration.ofMillis(KAFKA_POLL_TIME_MS));
-        long currentTimeMillis1 = System.currentTimeMillis();
-
-        log.info("Poll for topic {} (duration: {} ms) returned messages (number {}): {}",
-            topic, currentTimeMillis1 - currentTimeMillis, records.count(), records);
-        return records;
-    }
-
     private static <T extends SpecificRecordBase> KafkaConsumer<String, T> getExistingOrCreateKafkaAvroConsumerForTopic(String topic) {
         return getExistingOrCreateKafkaConsumerForTopic(topic, getTopicSpecificKafkaAvroProperties(topic));
-    }
-
-    private static <T> KafkaConsumer<String, T> getExistingOrCreateKafkaJsonConsumerForTopic(String topic) {
-        return getExistingOrCreateKafkaConsumerForTopic(topic, getTopicSpecificKafkaProperties(topic));
     }
 
     private static <T> KafkaConsumer<String, T> getExistingOrCreateKafkaConsumerForTopic(
@@ -153,12 +125,6 @@ class KafkaConsumerInternal {
         properties.setProperty(VALUE_DESERIALIZER_CLASS_CONFIG, TEST_SETTINGS.getProperty("kafka.value-deserializer"));
         properties.setProperty("schema.registry.url", TEST_SETTINGS.getProperty("kafka.schema_registry"));
         properties.setProperty(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, "true");
-        return properties;
-    }
-
-    private static Properties getTopicSpecificKafkaProperties(String topic) {
-        Properties properties = getCommonTopicSpecificKafkaProperties(topic);
-//        properties.setProperty(VALUE_DESERIALIZER_CLASS_CONFIG, TEST_SETTINGS.getProperty("kafka.value-json-deserializer"));
         return properties;
     }
 

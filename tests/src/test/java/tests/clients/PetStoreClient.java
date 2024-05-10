@@ -16,6 +16,7 @@ public class PetStoreClient {
     private static final String ADD_PET_ASYNC = "/pets/async";
     private static final String ADD_PET = "/pets";
     private static final String GET_PETS = "/pets";
+    private static final String GET_CREATE_PETS_REQUESTS = "/requests/createPets/{traceId}";
 
     public void addPetAsync(PetRequest petRequest, String traceId, int expectedStatusCode) {
         given()
@@ -49,6 +50,17 @@ public class PetStoreClient {
             .contentType(ContentType.JSON)
             .when()
             .get(GET_PETS)
+            .then()
+            .extract().response();
+    }
+
+    public Response getCreatePetsRequests(String traceId) {
+        return given()
+            .baseUri(TEST_SETTINGS.getProperty("petstore.stub_url"))
+            .pathParam("traceId", traceId)
+            .contentType(ContentType.JSON)
+            .when()
+            .get(GET_CREATE_PETS_REQUESTS)
             .then()
             .extract().response();
     }

@@ -48,7 +48,6 @@ public class PetStoreSteps {
         PetRequest petRequest = TestDataSerenity.get(PET_REQUEST, PetRequest.class);
         String traceId = TestDataSerenity.get(TRACE_ID, String.class);
         CreatePetResponse createPetResponse = petStoreClient.addPet(petRequest, traceId, expectedStatusCode);
-        petStoreClient.addPet(petRequest, traceId, expectedStatusCode);
         TestDataSerenity.set(CREATE_PET_RESPONSE, createPetResponse);
     }
 
@@ -57,10 +56,12 @@ public class PetStoreSteps {
         String traceId = TestDataSerenity.get(TRACE_ID, String.class);
         PetRequest petRequest = TestDataSerenity.get(PET_REQUEST, PetRequest.class);
         CreatePetResponse createPetResponse = TestDataSerenity.get(CREATE_PET_RESPONSE, CreatePetResponse.class);
+        Response getCreatePetsRequests = await().until(() -> petStoreClient.getCreatePetsRequests(traceId),
+            res -> res.asString().contains(petRequest.getName()));
         Response response = await().until(() -> petStoreClient.getPets(traceId),
             c -> c.getStatusCode() == HttpStatus.SC_OK);
         TestDataSerenity.set(GET_PETS_RESPONSE, response);
-        petStoreValidator.validateNewPetIsAdded(response, petRequest, createPetResponse);
+        petStoreValidator.validateNewPetIsAdded(response, petRequest, createPetResponse, getCreatePetsRequests);
     }
 
     @And("message is sent to {} kafka topic")
