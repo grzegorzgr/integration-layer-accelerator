@@ -44,7 +44,7 @@ class KafkaConsumerInternal {
 
     private static final String RUNNER_ID = UUID.randomUUID().toString();
 
-    private static final int KAFKA_POLL_TIME_MS = 1000;
+    private static final int KAFKA_POLL_TIME_MS = 10000;
 
     static {
         log.info("Runner ID for Kafka Consumer is {}", RUNNER_ID);
