@@ -18,13 +18,24 @@ public class PetStoreValidator {
 
     private final ObjectMapper mapper = ObjectMapperBuilder.build();
 
-    public void validateNewPetIsAdded(Response response, PetRequest petRequest, CreatePetResponse createPetResponse) throws JsonProcessingException {
+    public void validateNewPetIsAdded(Response response, PetRequest petRequest, CreatePetResponse createPetResponse,
+        Response getCreatePetsRequests) throws JsonProcessingException {
         List<Pet> petList = mapper.readValue(
             response.asString(), new TypeReference<>() {
             });
 
+        List<com.kainos.petstore.model.Pet> createPetRequestsList = mapper.readValue(
+            getCreatePetsRequests.asString(), new TypeReference<>() {
+            });
+
         assertEquals(1, petList.size());
-        assertEquals(createPetResponse.getId(), petList.get(0).getId());
+        if (createPetResponse == null) {
+            assertEquals(createPetRequestsList.get(0).getId(), petList.get(0).getId());
+            assertEquals(createPetRequestsList.get(0).getName(), petList.get(0).getName());
+            assertEquals(createPetRequestsList.get(0).getTag(), petList.get(0).getTag());
+        } else {
+            assertEquals(createPetResponse.getId(), petList.get(0).getId());
+        }
         assertEquals(petRequest.getName(), petList.get(0).getName());
         assertEquals(petRequest.getTag(), petList.get(0).getTag());
     }

@@ -127,6 +127,9 @@ configurations {
 
 dependencies {
     testImplementation project(':api-models')
+    testImplementation project(':avro-schemas')
+    testImplementation project(':avro-models')
+    testImplementation project(':petstore-models')
 
     testImplementation group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.1'
     testImplementation "org.codehaus.jackson:jackson-mapper-asl:1.9.13"
@@ -137,6 +140,10 @@ dependencies {
     testImplementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
     testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     testImplementation group: 'org.apache.cxf', name: 'cxf-spring-boot-starter-jaxws', version: '4.0.1'
+    testImplementation group: 'org.springframework.kafka', name: 'spring-kafka', version: '2.4.1.RELEASE'
+    testImplementation(group: 'io.confluent', name: 'kafka-avro-serializer', version: '5.1.0') {
+        exclude group: 'org.slf4j'
+    }
     testImplementation "net.serenity-bdd:serenity-core:${serenityCoreVersion}",
             "net.serenity-bdd:serenity-cucumber:${serenityCoreVersion}",
             "net.serenity-bdd:serenity-screenplay:${serenityCoreVersion}",
