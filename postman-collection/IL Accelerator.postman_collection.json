@@ -83,7 +83,7 @@
 				"method": "POST",
 				"header": [
 					{
-						"key": "TRACE_ID",
+						"key": "TRACE-ID",
 						"value": "1",
 						"uuid": "783c0b98-fe16-4412-a721-13df6fc78582"
 					}
@@ -251,7 +251,6 @@
 					{
 						"key": "TRACE-ID",
 						"value": "1",
-						"type": "text",
 						"uuid": "d4026149-6952-4ebb-a97e-f7dab98429db"
 					}
 				],
@@ -273,6 +272,41 @@
 					"port": "20001",
 					"path": [
 						"pets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Camunda - new order",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "TRACE-ID",
+						"value": "2",
+						"type": "text",
+						"uuid": "17eb5124-18c6-4ed3-aa19-a4f45640897a"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"test\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:10004/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "10004",
+					"path": [
+						"orders"
 					]
 				}
 			},
