@@ -31,6 +31,17 @@ services:
       SERVER_SSL_ENABLED: 'false'
       URL_SERVICE_DEMO: $URL_SERVICE_DEMO
       URL_SERVICE_ERROR_HANDLING: $URL_SERVICE_ERROR_HANDLING
+      URL_SERVICE_CAMUNDA: $URL_SERVICE_CAMUNDA
+
+  camunda:
+    image: com.kainos/camunda:$DOCKER_TAG
+    ports:
+      - "10004:8080"
+    environment:
+      JVM_OPTS: $JVM_OPTS
+      KAFKA_BROKER: $URL_KAFKA_BROKER
+      KAFKA_SCHEMA_REGISTRY: $URL_KAFKA_SCHEMA_REGISTRY
+      ETCD_ENDPOINT: $URL_ETCD
 
   petstore-stub:
     image: com.kainos/petstore-stub:0.0.1-SNAPSHOT

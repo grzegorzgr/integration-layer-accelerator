@@ -22,6 +22,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.kainos.avro.conversion.LocalDateTimeConversion;
 import com.kainos.avro.source.ErrorEvent;
+import com.kainos.orders.api.model.Order;
 import com.kainos.pets.api.model.PetRequest;
 import com.kainos.petstore.model.Pet;
 
@@ -36,7 +37,8 @@ public class Generator {
         Map<Class, String> sourcePojos = ofEntries(
             entry(PetRequest.class, "PetRequest.avsc"),
             entry(Pet.class, "Pet.avsc"),
-            entry(ErrorEvent.class, "ErrorEvent.avsc")
+            entry(ErrorEvent.class, "ErrorEvent.avsc"),
+            entry(Order.class, "Order.avsc")
         );
 
         clearDirectory(AVRO_LIBS_DIR);
@@ -86,6 +88,7 @@ public class Generator {
             .replaceAll(ENUM_WITH_NAMESPACE_REGEXP, "$1$2Enums$3")
             .replace("com.kainos.avro.source", COMMON_AVRO)
             .replace("com.kainos.pets.api.model", "com.kainos.pets.avro")
+            .replace("com.kainos.orders.api.model", "com.kainos.orders.avro")
             .replace("com.kainos.petstore.model", "com.kainos.petstore.avro");
     }
 
