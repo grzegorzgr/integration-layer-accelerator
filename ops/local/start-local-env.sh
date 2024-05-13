@@ -10,6 +10,9 @@ popd
 pushd ../docker/services/error-handling && ./build-image.sh
 popd
 
+pushd ../docker/services/camunda && ./build-image.sh
+popd
+
 pushd ../docker/stubs/petstore && ./build-image.sh
 popd
 

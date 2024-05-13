@@ -74,6 +74,9 @@ subprojects {
         imports {
             mavenBom "org.springframework.cloud:spring-cloud-dependencies:${SPRING_CLOUD_DEPENDENCIES_VERSION}"
             mavenBom "org.springframework.boot:spring-boot-dependencies:${SPRING_BOOT_VERSION}"
+            mavenBom "io.micrometer:micrometer-tracing-bom:${MICROMETER_TRACING_BOM_VERSION}"
+            mavenBom "org.camunda.bpm:camunda-bom:${CAMUNDA_BOM_VERSION}"
+            mavenBom "org.camunda.spin:camunda-spin-bom:${CAMUNDA_SPIN_BOM_VERSION}"
         }
     }
 

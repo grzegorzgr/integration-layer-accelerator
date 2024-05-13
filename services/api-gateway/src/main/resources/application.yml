@@ -2,6 +2,7 @@ url:
   service:
     error-handling: http://localhost:10001
     demo: http://localhost:10002
+    camunda: http://localhost:10004
 
 api-gateway:
   key-store: classpath:api-gateway.jks
@@ -50,7 +51,7 @@ spring:
       default-filters:
         - PreGatewayHeaderOrchestratorFilter
       routes:
-        - id: example-post
+        - id: pets-post
           uri: ${url.service.demo}
           predicates:
             - Path=/pets
@@ -58,7 +59,7 @@ spring:
           filters:
             - PrefixPathWhenNeeded
 
-        - id: example-post-async
+        - id: pets-post-async
           uri: ${url.service.demo}
           predicates:
             - Path=/pets/async
@@ -66,11 +67,19 @@ spring:
           filters:
             - PrefixPathWhenNeeded
 
-        - id: example-get
+        - id: pets-get
           uri: ${url.service.demo}
           predicates:
             - Path=/pets
             - Method=GET
+          filters:
+            - PrefixPathWhenNeeded
+
+        - id: orders-post
+          uri: ${url.service.camunda}
+          predicates:
+            - Path=/orders
+            - Method=POST
           filters:
             - PrefixPathWhenNeeded
 

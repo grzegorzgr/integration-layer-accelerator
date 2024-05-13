@@ -1,0 +1,99 @@
+spring.application.name: camunda
+
+camunda:
+  bpm:
+    admin-user:
+      id: admin
+      password: admin
+    filter:
+      create: All tasks
+    history-level: activity
+    generic-properties:
+      properties:
+        historyTimeToLive: P1D
+
+spring.jackson.deserialization.fail_on_unknown_properties: true
+spring.jackson.default-property-inclusion: non_null
+
+kafka:
+  broker: localhost:9093
+  schema_registry: http://localhost:8081
+  topics:
+    orders: orders
+  defaultTopicNumPartitions: 1
+  defaultTopicReplicationFactor: 1
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:camunda_db
+    username: user
+    password: pwd
+  kafka:
+    properties:
+      security:
+        protocol: SSL
+    producer:
+      bootstrap-servers: ${kafka.broker}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      acks: all
+      properties:
+        schema:
+          registry:
+            url: ${kafka.schema_registry}
+    consumer:
+      bootstrap-servers: ${kafka.broker}
+      group-id: demo-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      properties:
+        schema:
+          registry:
+            url: ${kafka.schema_registry}
+        specific:
+          avro:
+            reader: true
+      max-poll-records: 1
+    ssl:
+      key-store-password: i5b85JTcEK5r5JgZ
+      trust-store-password: i5b85JTcEK5r5JgZ
+
+etcd:
+  endpoint: http://localhost:2379
+
+management:
+  endpoint:
+    restart:
+      enabled: true
+    health:
+      enabled: true
+    info:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logback:
+  kafka:
+    broker: ${kafka.broker}
+    schema_registry: ${kafka.schema_registry}
+
+logging:
+  level:
+    com.nexigroup.ms.logging.LoggingInterceptorLogEventSender: DEBUG
+    com.nexigroup.ms.logging.KafkaConsumerLoggingInterceptor: DEBUG
+    org.zalando.logbook: TRACE
+
+logbook:
+  include:
+    - /**
+  exclude:
+    - /actuator/**
+    - /camunda/**
+  format:
+    style: http
+
+global:
+  redactor:
+    enabled: true

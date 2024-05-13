@@ -18,8 +18,11 @@ dependencies {
 
 def openApiYamlNames = [
         // In order to add another OpenAPI 3.0 Contract simply append another record after comma
-        [file: "KainosPetsApi", model: "com.kainos.pets.api.model"]
+        [file: "KainosPetsApi", model: "com.kainos.pets.api.model"],
+        [file: "KainosOrdersApi", model: "com.kainos.orders.api.model"]
 ]
+
+sourceSets.main.java.srcDir "$buildDir/generated-src/src/main/java"
 
 openApiYamlNames.each {
     String taskName = "openApiGenerate_" + it.file
@@ -52,5 +55,3 @@ openApiYamlNames.each {
     }
     compileJava.dependsOn(taskName)
 }
-
-sourceSets.main.java.srcDir "$buildDir/generated-src/src/main/java"

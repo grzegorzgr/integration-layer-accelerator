@@ -1,0 +1,41 @@
+buildscript {
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${SPRING_BOOT_VERSION}")
+    }
+}
+
+apply plugin: "org.springframework.boot"
+
+dependencies {
+    implementation project(":error-handling-lib")
+    implementation project(":api-models")
+    implementation project(":avro-models")
+    implementation project(":kafka-core")
+
+    implementation "io.micrometer:micrometer-registry-prometheus"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.zalando:logbook-spring-boot-starter:${ZALANDO_LOGBOOK_VERSION}"
+    implementation "org.zalando:logbook-core:${ZALANDO_LOGBOOK_VERSION}"
+    implementation "org.zalando:logbook-servlet:${ZALANDO_LOGBOOK_VERSION}:javax"
+
+    implementation "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter"
+    implementation "org.camunda.bpm:camunda-engine"
+    implementation "org.camunda.bpm:camunda-engine-plugin-spin"
+    implementation "org.camunda.spin:camunda-spin-core"
+    implementation "org.camunda.spin:camunda-spin-dataformat-json-jackson"
+    implementation "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest"
+    implementation "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp"
+
+    implementation "org.springframework.boot:spring-boot-starter-jdbc"
+    implementation "com.h2database:h2"
+    implementation "com.microsoft.sqlserver:mssql-jdbc"
+
+    // Duplicate strategy needed during upgrade to spring boot 3 for this project.
+    // If spring boot is upgraded further and builds without this, then it is fixed.
+    // https://github.com/spring-projects/spring-boot/issues/33659
+    tasks.named('bootJar') {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+}

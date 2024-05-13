@@ -8,6 +8,7 @@ apply plugin: 'org.springframework.boot'
 
 dependencies {
     implementation project(":api-models")
+    implementation project(":avro-models")
     implementation project(":tracing")
     implementation project(":kafka-core")
     implementation project(":error-handling-lib")
