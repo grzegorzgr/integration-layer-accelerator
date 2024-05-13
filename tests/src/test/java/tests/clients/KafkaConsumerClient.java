@@ -33,17 +33,6 @@ public class KafkaConsumerClient {
     private static final String CONSUMER_RESUME = "/operations-service/paused-consumers/resume";
     private static final TestSettings TEST_SETTINGS = TestSettings.getInstance();
 
-    public void sendResumeConsumerRequest(String consumerId, String traceId) {
-        given()
-            .baseUri(TEST_SETTINGS.getProperty("api.gateway.url"))
-            .header("TRACE-ID", traceId)
-            .queryParam("source", consumerId)
-            .when()
-            .post(CONSUMER_RESUME)
-            .then()
-            .statusCode(HttpStatus.OK_200);
-    }
-
     public void sendResumeAllConsumersRequest(String traceId) {
         given()
             .baseUri(TEST_SETTINGS.getProperty("api.gateway_url"))
@@ -66,7 +55,6 @@ public class KafkaConsumerClient {
                 return parsedTraceId.equals(expectedTraceId);
             }
 
-            // alternate predicate that checks msg body (legacy solution)
             return record.value() != null
                 && record.value().toString().contains("traceId")
                 && record.value().get("traceId").toString().equals(expectedTraceId);

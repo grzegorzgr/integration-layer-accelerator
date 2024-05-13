@@ -34,7 +34,7 @@ import tests.utils.TestSettings;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SuppressWarnings("checkstyle:magicnumber")
+
 class KafkaConsumerInternal {
 
     private static final TestSettings TEST_SETTINGS = TestSettings.getInstance();
@@ -54,7 +54,7 @@ class KafkaConsumerInternal {
         sleep100Ms();
 
         synchronized (KafkaConsumerInternal.class) {
-            KafkaConsumer<String, T> consumer = getExistingOrCreateKafkaAvroConsumerForTopic(topic);
+            KafkaConsumer<String, T> consumer = getExistingOrCreateKafkaConsumerForTopic(topic, getTopicKafkaAvroProperties(topic));
             ConsumerRecords<String, T> pollResult = singleAvroPoll(topic, consumer);
             List<ConsumerRecord> consumerRecords = processPollResult(pollResult, topic);
             consumer.commitSync();
@@ -68,39 +68,6 @@ class KafkaConsumerInternal {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    private static <T> List<ConsumerRecord> processPollResult(ConsumerRecords<String, T> pollResult, String topic) {
-        List<ConsumerRecord<String, T>> newRecordsList = iteratorToList(pollResult.iterator());
-
-        newRecordsList.forEach(record -> {
-            Header traceIdHeader = record.headers().lastHeader("trace-id");
-            String traceId = traceIdHeader != null ? new String(traceIdHeader.value(), StandardCharsets.UTF_8) : null;
-            log.info("New Kafka msg in per-topic cache (topic {}, traceId {}) key {},  value {}",
-                topic, traceId, record.key(), record.value());
-        });
-
-        MSGS_BY_TOPIC.computeIfAbsent(topic, k -> new ArrayList<>());
-        List<ConsumerRecord> allMsgsForThisTopic = MSGS_BY_TOPIC.get(topic);
-        allMsgsForThisTopic.addAll(newRecordsList);
-        return allMsgsForThisTopic;
-    }
-
-    @NotNull
-    private static  <T extends SpecificRecordBase> ConsumerRecords<String, T> singleAvroPoll(
-        String topic, KafkaConsumer<String, T> consumer) {
-        long currentTimeMillis = System.currentTimeMillis();
-        log.info("Poll start for topic {}", topic);
-        ConsumerRecords<String, T> records = consumer.poll(Duration.ofMillis(KAFKA_POLL_TIME_MS));
-        long currentTimeMillis1 = System.currentTimeMillis();
-
-        log.info("Poll for topic {} (duration: {} ms) returned messages (number {}): {}",
-            topic, currentTimeMillis1 - currentTimeMillis, records.count(), records);
-        return records;
-    }
-
-    private static <T extends SpecificRecordBase> KafkaConsumer<String, T> getExistingOrCreateKafkaAvroConsumerForTopic(String topic) {
-        return getExistingOrCreateKafkaConsumerForTopic(topic, getTopicSpecificKafkaAvroProperties(topic));
     }
 
     private static <T> KafkaConsumer<String, T> getExistingOrCreateKafkaConsumerForTopic(
@@ -119,30 +86,50 @@ class KafkaConsumerInternal {
         return consumer;
     }
 
-    @SuppressWarnings("checkstyle:magicnumber")
-    private static Properties getTopicSpecificKafkaAvroProperties(String topic) {
-        Properties properties = getCommonTopicSpecificKafkaProperties(topic);
+    private static Properties getTopicKafkaAvroProperties(String topic) {
+        Properties properties = new Properties();
+        properties.setProperty(BOOTSTRAP_SERVERS_CONFIG, TEST_SETTINGS.getProperty("kafka.broker"));
+        properties.setProperty(GROUP_ID_CONFIG, "tests-" + RUNNER_ID + "-" + topic);
+        properties.setProperty(AUTO_OFFSET_RESET_CONFIG, TEST_SETTINGS.getProperty("kafka.auto-offset-reset"));
+        properties.setProperty(KEY_DESERIALIZER_CLASS_CONFIG, TEST_SETTINGS.getProperty("kafka.key-deserializer"));
+        properties.setProperty(MAX_POLL_INTERVAL_MS_CONFIG, String.valueOf(Duration.ofMinutes(5).toMillis()));
+        properties.setProperty(ENABLE_AUTO_COMMIT_CONFIG, "false");
+        properties.setProperty(SESSION_TIMEOUT_MS_CONFIG, String.valueOf(Duration.ofSeconds(10).toMillis()));
+        properties.setProperty(HEARTBEAT_INTERVAL_MS_CONFIG, String.valueOf(Duration.ofSeconds(5).toMillis()));
         properties.setProperty(VALUE_DESERIALIZER_CLASS_CONFIG, TEST_SETTINGS.getProperty("kafka.value-deserializer"));
         properties.setProperty("schema.registry.url", TEST_SETTINGS.getProperty("kafka.schema_registry"));
         properties.setProperty(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, "true");
         return properties;
     }
 
-    private static Properties getCommonTopicSpecificKafkaProperties(String topic) {
-        Properties properties = new Properties();
-        properties.setProperty(BOOTSTRAP_SERVERS_CONFIG, TEST_SETTINGS.getProperty("kafka.broker"));
-        // This is important to have separate group for each consumer (and those are topic-specific) to avoid rebalancing process
-        // With multithreaded serenity setup we need to have unique groups so each consumer is standalone and eats all messages
-        properties.setProperty(GROUP_ID_CONFIG, "tests-" + RUNNER_ID + "-" + topic);
-        properties.setProperty(AUTO_OFFSET_RESET_CONFIG, TEST_SETTINGS.getProperty("kafka.auto-offset-reset"));
-        properties.setProperty(KEY_DESERIALIZER_CLASS_CONFIG, TEST_SETTINGS.getProperty("kafka.key-deserializer"));
-        // Our consumers here do not poll all the time, only on specific test steps
-        properties.setProperty(MAX_POLL_INTERVAL_MS_CONFIG, String.valueOf(Duration.ofMinutes(5).toMillis()));
-        properties.setProperty(ENABLE_AUTO_COMMIT_CONFIG, "false");
-        properties.setProperty(SESSION_TIMEOUT_MS_CONFIG, String.valueOf(Duration.ofSeconds(10).toMillis()));
-        properties.setProperty(HEARTBEAT_INTERVAL_MS_CONFIG, String.valueOf(Duration.ofSeconds(5).toMillis()));
+    @NotNull
+    private static  <T extends SpecificRecordBase> ConsumerRecords<String, T> singleAvroPoll(String topic,
+        KafkaConsumer<String, T> consumer) {
 
-        return properties;
+        long currentTimeMillis = System.currentTimeMillis();
+        log.info("Poll start for topic {}", topic);
+        ConsumerRecords<String, T> records = consumer.poll(Duration.ofMillis(KAFKA_POLL_TIME_MS));
+        long currentTimeMillis1 = System.currentTimeMillis();
+
+        log.info("Poll for topic {} (duration: {} ms) returned messages (number {}): {}",
+            topic, currentTimeMillis1 - currentTimeMillis, records.count(), records);
+        return records;
+    }
+
+    private static <T> List<ConsumerRecord> processPollResult(ConsumerRecords<String, T> pollResult, String topic) {
+        List<ConsumerRecord<String, T>> newRecordsList = iteratorToList(pollResult.iterator());
+
+        newRecordsList.forEach(record -> {
+            Header traceIdHeader = record.headers().lastHeader("trace-id");
+            String traceId = traceIdHeader != null ? new String(traceIdHeader.value(), StandardCharsets.UTF_8) : null;
+            log.info("New Kafka msg in per-topic cache (topic {}, traceId {}) key {},  value {}",
+                topic, traceId, record.key(), record.value());
+        });
+
+        MSGS_BY_TOPIC.computeIfAbsent(topic, k -> new ArrayList<>());
+        List<ConsumerRecord> allMsgsForThisTopic = MSGS_BY_TOPIC.get(topic);
+        allMsgsForThisTopic.addAll(newRecordsList);
+        return allMsgsForThisTopic;
     }
 
     private static  <T> List<T> iteratorToList(Iterator<T> iterator) {

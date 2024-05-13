@@ -73,7 +73,7 @@ public class PetStoreSteps {
     }
 
     @And("message is sent to {} kafka topic")
-    public void messageIsSentToInternalPetsKafkaTopic(String kafkaTopic) throws JsonProcessingException, JSONException {
+    public void messageIsSentToKafkaTopic(String kafkaTopic) throws JsonProcessingException, JSONException {
         String traceId = TestDataSerenity.get(TRACE_ID, String.class);
         Response response = TestDataSerenity.get(GET_PETS_RESPONSE, Response.class);
         List<com.kainos.petstore.avro.Pet> petListMsgs = kafkaConsumerClient.getAllMsgsByTraceId(kafkaTopic, com.kainos.petstore.avro.Pet.getClassSchema(), traceId);

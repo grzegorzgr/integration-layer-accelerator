@@ -31,6 +31,8 @@ public class PetStoreValidator {
         assertEquals(1, petList.size());
         if (createPetResponse == null) {
             assertEquals(createPetRequestsList.get(0).getId(), petList.get(0).getId());
+            assertEquals(createPetRequestsList.get(0).getName(), petList.get(0).getName());
+            assertEquals(createPetRequestsList.get(0).getTag(), petList.get(0).getTag());
         } else {
             assertEquals(createPetResponse.getId(), petList.get(0).getId());
         }

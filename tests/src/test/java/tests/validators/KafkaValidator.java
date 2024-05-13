@@ -21,7 +21,6 @@ import tests.utils.ObjectMapperBuilder;
 public class KafkaValidator {
     private final ObjectMapper mapper = ObjectMapperBuilder.build();
 
-
     public void validatePetEventOnKafka(Response response, List<com.kainos.petstore.avro.Pet> petListMsgs) throws JsonProcessingException
         , JSONException {
         List<Pet> petList = mapper.readValue(
@@ -39,8 +38,6 @@ public class KafkaValidator {
     }
 
     public Callable<Boolean> allConsumersAreUp(List<KafkaConsumerClient.ConsumersResponse> consumerResponse) {
-        return () -> {
-            return consumerResponse.isEmpty();
-        };
+        return consumerResponse::isEmpty;
     }
 }
