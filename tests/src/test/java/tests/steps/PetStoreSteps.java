@@ -3,8 +3,10 @@ package tests.steps;
 
 import static org.awaitility.Awaitility.await;
 
+import static tests.model.TestDataKeys.CREATE_ORDER_RESPONSE;
 import static tests.model.TestDataKeys.CREATE_PET_RESPONSE;
 import static tests.model.TestDataKeys.GET_PETS_RESPONSE;
+import static tests.model.TestDataKeys.ORDER_REQUEST;
 import static tests.model.TestDataKeys.PET_REQUEST;
 import static tests.model.TestDataKeys.TRACE_ID;
 import static tests.utils.TestDataSerenity.traceId;
@@ -15,6 +17,8 @@ import org.apache.http.HttpStatus;
 import org.json.JSONException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.kainos.orders.api.model.CreateOrderResponse;
+import com.kainos.orders.api.model.OrderRequest;
 import com.kainos.pets.api.model.CreatePetResponse;
 import com.kainos.pets.api.model.PetRequest;
 
@@ -24,15 +28,18 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 import tests.clients.KafkaConsumerClient;
-import tests.clients.PetStoreClient;
+import tests.clients.apiclients.OrderClient;
+import tests.clients.apiclients.PetStoreClient;
 import tests.model.RequestFailure;
 import tests.utils.TestDataSerenity;
+import tests.utils.databuilders.OrderDataBuilder;
 import tests.utils.databuilders.PetDataBuilder;
 import tests.validators.KafkaValidator;
 import tests.validators.PetStoreValidator;
 
 public class PetStoreSteps {
     private final PetStoreClient petStoreClient = new PetStoreClient();
+    private final OrderClient orderClient = new OrderClient();
     private final PetStoreValidator petStoreValidator = new PetStoreValidator();
     private final KafkaConsumerClient kafkaConsumerClient = new KafkaConsumerClient();
     private final KafkaValidator kafkaValidator = new KafkaValidator();
@@ -54,6 +61,7 @@ public class PetStoreSteps {
 
     @Then("new pet is added")
     public void newPetIsAdded() throws JsonProcessingException {
+
         String traceId = TestDataSerenity.get(TRACE_ID, String.class);
         PetRequest petRequest = TestDataSerenity.get(PET_REQUEST, PetRequest.class);
         CreatePetResponse createPetResponse = TestDataSerenity.get(CREATE_PET_RESPONSE, CreatePetResponse.class);
@@ -78,6 +86,7 @@ public class PetStoreSteps {
         Response response = TestDataSerenity.get(GET_PETS_RESPONSE, Response.class);
         List<com.kainos.petstore.avro.Pet> petListMsgs = kafkaConsumerClient.getAllMsgsByTraceId(kafkaTopic, com.kainos.petstore.avro.Pet.getClassSchema(), traceId);
         kafkaValidator.validatePetEventOnKafka(response, petListMsgs);
+
     }
 
     @When("add new pet async endpoint is called and gets {int}")
@@ -110,5 +119,31 @@ public class PetStoreSteps {
         String traceId = TestDataSerenity.get(TRACE_ID, String.class);
         kafkaConsumerClient.sendResumeAllConsumersRequest(traceId);
         await().until(kafkaValidator.allConsumersAreUp(kafkaConsumerClient.getConsumerPausedStatuses(traceId)));
+    }
+
+    @Given("add new order request is prepared")
+    public void addNewOrderRequestIsPrepared() {
+        OrderRequest orderRequest = OrderDataBuilder.prepareOrderRequest();
+        traceId();
+        TestDataSerenity.set(ORDER_REQUEST, orderRequest);
+    }
+
+    @When("order request is sent and gets {int}")
+    public void orderRequestIsSentAndGets(int statusCode) {
+        OrderRequest orderRequest = TestDataSerenity.get(ORDER_REQUEST, OrderRequest.class);
+        String traceId = TestDataSerenity.get(TRACE_ID, String.class);
+        CreateOrderResponse response = orderClient.addOrderRequest(orderRequest, traceId, statusCode);
+        TestDataSerenity.set(CREATE_ORDER_RESPONSE, response);
+    }
+
+    @Then("order message is sent to {} kafka topic")
+    public void orderMessageIsSentToTopicKafkaTopic(String kafkaTopic) {
+        String traceId = TestDataSerenity.get(TRACE_ID, String.class);
+        List<com.kainos.orders.avro.Order> orderMsgs = kafkaConsumerClient.getAllMsgsByTraceId(kafkaTopic,
+            com.kainos.orders.avro.Order.getClassSchema(), traceId);
+        CreateOrderResponse createOrderResponse = TestDataSerenity.get(CREATE_ORDER_RESPONSE, CreateOrderResponse.class);
+        OrderRequest orderRequest = TestDataSerenity.get(ORDER_REQUEST, OrderRequest.class);
+        kafkaValidator.validateOrderEventOnKafka(orderMsgs, createOrderResponse, orderRequest);
+
     }
 }

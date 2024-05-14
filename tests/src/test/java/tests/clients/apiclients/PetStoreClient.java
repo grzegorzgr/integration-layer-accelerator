@@ -1,10 +1,11 @@
-package tests.clients;
+package tests.clients.apiclients;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 
 import org.springframework.http.HttpStatus;
 
+import com.kainos.orders.api.model.OrderRequest;
 import com.kainos.pets.api.model.CreatePetResponse;
 import com.kainos.pets.api.model.PetRequest;
 

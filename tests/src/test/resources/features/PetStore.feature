@@ -20,3 +20,8 @@ Feature: PetStore
     Then All consumers are resumed
     Then new pet is added
     And message is sent to pets kafka topic
+
+  Scenario: Camunda flow
+    Given add new order request is prepared
+    When order request is sent and gets 201
+    Then order message is sent to orders kafka topic

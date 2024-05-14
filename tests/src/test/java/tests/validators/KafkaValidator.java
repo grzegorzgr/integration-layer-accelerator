@@ -1,5 +1,6 @@
 package tests.validators;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 
@@ -12,6 +13,8 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kainos.orders.api.model.CreateOrderResponse;
+import com.kainos.orders.api.model.OrderRequest;
 import com.kainos.pets.api.model.Pet;
 
 import io.restassured.response.Response;
@@ -39,5 +42,12 @@ public class KafkaValidator {
 
     public Callable<Boolean> allConsumersAreUp(List<KafkaConsumerClient.ConsumersResponse> consumerResponse) {
         return consumerResponse::isEmpty;
+    }
+
+    public void validateOrderEventOnKafka(List<com.kainos.orders.avro.Order> orderMsgs, CreateOrderResponse createOrderResponse,
+        OrderRequest orderRequest) {
+        assertEquals(1, orderMsgs.size());
+        assertEquals(createOrderResponse.getId(), orderMsgs.get(0).getId());
+        assertEquals(orderRequest.getName(), orderMsgs.get(0).getName());
     }
 }
