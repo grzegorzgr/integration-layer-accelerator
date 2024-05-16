@@ -3,6 +3,14 @@ spring.application.name: demo
 petstore:
   url: http://localhost:20001
 
+sfdc:
+  authenticated:
+    host: http://localhost:20002
+    username: hello
+    password: hello
+    clientId: hello
+    secret: hello
+
 management:
   endpoint:
     restart:
@@ -73,3 +81,17 @@ logging:
 global:
   redactor:
     enabled: true
+
+logbook:
+  include:
+    - /**
+  exclude:
+    - /actuator/**
+  format.style: http
+  obfuscate:
+    headers:
+      - Authorization
+      - X-Secret
+    parameters:
+      - access_token
+      - password

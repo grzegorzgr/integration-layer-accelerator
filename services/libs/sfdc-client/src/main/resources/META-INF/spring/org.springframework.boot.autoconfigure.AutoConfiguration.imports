@@ -1,0 +1,4 @@
+sfdc.client.SfdcAuthenticatedClient
+sfdc.properties.SfdcAuthenticatedProperties
+sfdc.properties.SfdcAddFileRequestProperties
+sfdc.client.SFDCClientConfiguration

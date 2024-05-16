@@ -16,8 +16,7 @@
 				"header": [
 					{
 						"key": "TRACE-ID",
-						"value": "1",
-						"uuid": "8c009507-2ffb-4f5a-8dea-b60a8b1bd0bd"
+						"value": "1"
 					}
 				],
 				"body": {
@@ -50,8 +49,7 @@
 				"header": [
 					{
 						"key": "TRACE_ID",
-						"value": "1",
-						"uuid": "3acf1319-ad24-4d2b-a6eb-6b0f4020d60c"
+						"value": "1"
 					}
 				],
 				"body": {
@@ -84,8 +82,7 @@
 				"header": [
 					{
 						"key": "TRACE-ID",
-						"value": "1",
-						"uuid": "783c0b98-fe16-4412-a721-13df6fc78582"
+						"value": "1"
 					}
 				],
 				"body": {
@@ -107,6 +104,64 @@
 					"path": [
 						"pets",
 						"async"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create new account in SFDC",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "TRACE-ID",
+						"value": "3"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:10003/accounts/myAccountName",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "10003",
+					"path": [
+						"accounts",
+						"myAccountName"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Camunda - new order",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "TRACE-ID",
+						"value": "2"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"test\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:10004/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "10004",
+					"path": [
+						"orders"
 					]
 				}
 			},
@@ -250,8 +305,7 @@
 				"header": [
 					{
 						"key": "TRACE-ID",
-						"value": "1",
-						"uuid": "d4026149-6952-4ebb-a97e-f7dab98429db"
+						"value": "1"
 					}
 				],
 				"body": {
@@ -278,15 +332,17 @@
 			"response": []
 		},
 		{
-			"name": "Camunda - new order",
+			"name": "SFDC stub - new account",
 			"request": {
 				"method": "POST",
 				"header": [
 					{
+						"key": "Authorization",
+						"value": "Bearer c3R1Yl9zZmRjX3Rva2Vu "
+					},
+					{
 						"key": "TRACE-ID",
-						"value": "2",
-						"type": "text",
-						"uuid": "17eb5124-18c6-4ed3-aa19-a4f45640897a"
+						"value": "1"
 					}
 				],
 				"body": {
@@ -299,14 +355,37 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:10004/orders",
+					"raw": "http://localhost:20002/services/account",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "10004",
+					"port": "20002",
 					"path": [
-						"orders"
+						"services",
+						"account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SFDC stub - get saved requests",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:20002/requests/generic/createNewAccount/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "20002",
+					"path": [
+						"requests",
+						"generic",
+						"createNewAccount",
+						"3"
 					]
 				}
 			},

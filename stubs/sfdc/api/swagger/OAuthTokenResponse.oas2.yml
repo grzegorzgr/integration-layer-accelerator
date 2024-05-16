@@ -1,0 +1,107 @@
+swagger: '2.0'
+info:
+  title: SFDC Auth API
+  version: '1.0'
+schemes:
+  - https
+produces:
+  - application/json
+consumes:
+  - application/x-www-form-urlencoded
+paths:
+  /services/oauth2/token:
+    x-swagger-router-controller: sfdcToken
+    post:
+      summary: OAuth 2.0 token
+      operationId: token
+      parameters:
+        - in: header
+          name: Content-Type
+          type: string
+          default: application/x-www-form-urlencoded
+        - in: formData
+          name: grant_type
+          type: string
+          default: password
+          description: Default value is "password"
+          required: true
+        - in: formData
+          name: username
+          type: string
+          description: The email you use to login
+          required: true
+        - in: formData
+          name: password
+          type: string
+          required: true
+        - in: formData
+          name: client_id
+          type: string
+          description: Consumer Key
+          required: true
+        - in: formData
+          name: client_secret
+          type: string
+          description: Consumer Secret
+          required: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-type:
+              type: string
+          schema:
+            $ref: '#/definitions/OAuthTokenResponse'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/OAuthTokenError'
+      description: The Salesforce instance’s OAuth 2.0 token endpoint
+definitions:
+  OAuthTokenResponse:
+    type: object
+    x-examples:
+      example-1:
+        access_token: 00D58000000dSya!AQUAQO3tE7ysiw9hjJnSfwJ
+        instance_url: 'https://concardis.my.salesforce.com'
+        id: 'https://login.salesforce.com/id/1232131453222/17623562738652'
+        token_type: Bearer
+        issued_at: '1653051602650'
+        signature: "z\fsfgzrawe45r435w4tzrtasd="
+    properties:
+      access_token:
+        type: string
+      instance_url:
+        type: string
+      id:
+        type: string
+      token_type:
+        type: string
+      issued_at:
+        type: string
+      signature:
+        type: string
+    required:
+      - access_token
+      - token_type
+  OAuthTokenError:
+    type: object
+    x-examples:
+      example-1:
+        error: invalid_request
+        error_description: string
+        error_uri: string
+    properties:
+      error:
+        type: string
+        enum:
+          - invalid_request
+          - invalid_client
+          - invalid_grant
+          - invalid_scope
+          - unauthorized_client
+          - unsupported_grant_type
+      error_description:
+        type: string
+      error_uri:
+        type: string

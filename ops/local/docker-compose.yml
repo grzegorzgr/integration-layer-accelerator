@@ -18,6 +18,7 @@ services:
     environment:
       JVM_OPTS: $JVM_OPTS
       PETSTORE_URL: $URL_EXTERNAL_PETSTORE
+      SFDC_AUTHENTICATED_HOST: $URL_EXTERNAL_SFDC
       KAFKA_BROKER: $URL_KAFKA_BROKER
       KAFKA_SCHEMA_REGISTRY: $URL_KAFKA_SCHEMA_REGISTRY
       ETCD_ENDPOINT: $URL_ETCD
@@ -47,6 +48,13 @@ services:
     image: com.kainos/petstore-stub:0.0.1-SNAPSHOT
     ports:
       - "20001:8080"
+    environment:
+      JVM_OPTS: $JVM_OPTS
+
+  sfdc-stub:
+    image: com.kainos/sfdc-stub:0.0.1-SNAPSHOT
+    ports:
+      - "20002:8080"
     environment:
       JVM_OPTS: $JVM_OPTS
 

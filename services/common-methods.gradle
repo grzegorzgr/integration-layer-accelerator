@@ -6,6 +6,23 @@ static String fixEmailFormat(String line) {
             : line
 }
 
+static String fixEnumNameFormat(String line) {
+    return line.contains('ENUM_START')
+            ? line
+            .replaceAll("\\s*ENUM_START", "ENUM_START")
+            .replaceAll("\\s", "_")
+            .replaceAll("-", "_")
+            .replaceAll("\\.", "_")
+            .replaceAll(",", "_")
+            .replaceAll(":", "_")
+            .replaceAll("/", "_")
+            .replaceAll("ENUM_START\"new", "ENUM_START\"_new")
+            .replaceAll("ENUM_START\"([0-9])", "ENUM_START\"_\$1")
+            .replaceAll("ENUM_START\"", "")
+            .replaceAll("\"ENUM_END", "")
+            : line
+}
+
 static String addJavaxAnnotation(String line) {
     if (line.contains('@Pattern')) {
         int startPatternIndex =  line.indexOf("Pattern(regexp=\"")
@@ -107,7 +124,6 @@ ext {
     addJavaxAnnotation = this.&addJavaxAnnotation
     fixEmailFormat = this.&fixEmailFormat
     fixEnumNameFormat = this.&fixEnumNameFormat
-    fixEnumNameReportsFormat = this.&fixEnumNameReportsFormat
     getSwaggerSourceConfiguration = this.&getSwaggerSourceConfiguration
     getSwaggerSourceConfigurationSerializableModel = this.&getSwaggerSourceConfigurationSerializableModel
 }

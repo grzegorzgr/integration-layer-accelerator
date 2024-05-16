@@ -21,6 +21,8 @@ include ':logback-config'
 include ':logging'
 include ':model-mapper'
 include ':petstore-models'
+include ':sfdc-client'
+include ':sfdc-models'
 include ':tracing'
 
 project(":api-models").projectDir = file("./libs/api-models")
@@ -34,4 +36,6 @@ project(":logback-config").projectDir = file("./libs/logback-config")
 project(":logging").projectDir = file("./libs/logging")
 project(":model-mapper").projectDir = file("./libs/model-mapper")
 project(":petstore-models").projectDir = file("./libs/petstore-models")
+project(":sfdc-client").projectDir = file("./libs/sfdc-client")
+project(":sfdc-models").projectDir = file("./libs/sfdc-models")
 project(":tracing").projectDir = file("./libs/tracing")

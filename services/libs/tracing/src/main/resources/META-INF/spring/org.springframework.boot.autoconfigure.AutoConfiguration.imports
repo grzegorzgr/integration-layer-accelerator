@@ -2,3 +2,4 @@ com.kainos.tracing.TracingConfiguration
 com.kainos.tracing.TraceContextProvider
 com.kainos.tracing.TraceIdFeignClientRequestInterceptor
 com.kainos.tracing.aspects.TracingKafkaConsumeHeaderAspect
+com.kainos.tracing.aspects.TracingRequestHeaderAspect

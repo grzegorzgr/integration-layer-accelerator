@@ -1,0 +1,26 @@
+{
+  "name": "sfdc",
+  "version": "0.0.1",
+  "private": true,
+  "description": "SFDC stub",
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.12.3",
+    "express-form-data": "^2.0.22",
+    "express-logging": "^1.1.1",
+    "logops": "^2.1.0",
+    "morgan": "^1.9.1",
+    "multer": "^1.4.5-lts.1",
+    "randomstring": "^1.2.3",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5",
+    "swagger-express-mw": "^0.1.0"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "test": "swagger project test"
+  }
+}

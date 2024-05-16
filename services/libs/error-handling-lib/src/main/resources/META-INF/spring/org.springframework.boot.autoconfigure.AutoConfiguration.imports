@@ -1,7 +1,10 @@
 com.kainos.exception.GlobalKafkaListenerExceptionErrorHandler
 com.kainos.exception.GlobalControllerExceptionHandler
 com.kainos.exception.decoder.FeignClientErrorDecoder
+com.kainos.exception.ErrorResponseMessageConverter
 com.kainos.errorreporting.ErrorReporter
+com.kainos.restclient.RestClientFactory
 com.kainos.ErrorHandlingPropertiesConfiguration
 com.kainos.consumermanagement.ConsumerManagementConfiguration
 com.kainos.properties.KafkaTopicsProperties
+com.kainos.properties.TimeoutProperties

@@ -1,0 +1,51 @@
+plugins {
+    id 'org.hidetake.swagger.generator' version "${SWAGGER_HIDTAKE_GENERATOR_VERSION}"
+}
+apply plugin: "java-library"
+
+dependencies {
+    swaggerCodegen "io.swagger:swagger-codegen-cli:${SWAGGER_CODEGEN_CLI_VERSION}"
+
+    api "io.swagger:swagger-annotations:${SWAGGER_ANNOTATIONS_VERSION}"
+    api "com.fasterxml.jackson.core:jackson-annotations"
+    api "com.google.code.findbugs:annotations:${GOOGLE_CODE_FINDBUGS_ANNOTATIONS_VERSION}"
+    api "com.google.code.findbugs:jsr305:${GOOGLE_CODE_FINDBUGS_JSR305_VERSION}"
+    api "org.springframework.boot:spring-boot-starter-web"
+    api "jakarta.validation:jakarta.validation-api"
+    api "jakarta.xml.bind:jakarta.xml.bind-api:${JAKARTA_XML_BIND_API_VERSION}"
+    api "jakarta.annotation:jakarta.annotation-api"
+    api "javax.annotation:javax.annotation-api:${JAVAX_ANNOTATION_API_VERSION}"
+    api "javax.validation:validation-api:${JAVAX_VALIDATION_API_VERSION}"
+}
+
+swaggerSources {
+    accountService getSwaggerSourceConfiguration(
+            file('Account.oas2.yml'), 'com.sfdc.account.model',
+            buildDir, code.validation)
+    oAuthAuthorizationService getSwaggerSourceConfiguration(
+            file('OAuthAuthorization.oas2.yml'), 'com.sfdc.auth.model',
+            buildDir, code.validation)
+}
+
+task swaggerFixPojos(type: Copy) {
+    [
+     "${swaggerSources.accountService.code.outputDir}",
+     "${swaggerSources.oAuthAuthorizationService.code.outputDir}"
+    ].each {
+        from("$it") {
+            include '**/*.java'
+            filter { String line -> fixEnumNameFormat(line) }
+            filter { String line -> addJavaxAnnotation(line) }
+        }
+        into "$buildDir/generated-src"
+    }
+}
+
+swaggerFixPojos.dependsOn generateSwaggerCodeAccountService
+swaggerFixPojos.dependsOn generateSwaggerCodeOAuthAuthorizationService
+
+compileJava.dependsOn swaggerSources.accountService.code
+compileJava.dependsOn swaggerSources.oAuthAuthorizationService.code
+
+compileJava.dependsOn swaggerFixPojos
+sourceSets.main.java.srcDir "$buildDir/generated-src/src/main/java"

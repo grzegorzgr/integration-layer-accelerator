@@ -1,0 +1,20 @@
+swagger: "2.0"
+info:
+  title: "Dummy swagger contract"
+  version: 1.0.0
+  description: "Swagger node application will not start correctly without dummy swagger.yaml"
+schemes:
+  - "https"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+basePath: "/"
+paths:
+  /info:
+    get:
+      summary: "Dummy endpoint"
+      description: ""
+      responses:
+        "200":
+          description: "OK"

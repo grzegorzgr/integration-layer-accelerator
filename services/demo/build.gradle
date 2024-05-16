@@ -13,6 +13,7 @@ dependencies {
     implementation project(":kafka-core")
     implementation project(":error-handling-lib")
     implementation project(":model-mapper")
+    implementation project(":sfdc-client")
 
     implementation "io.micrometer:micrometer-registry-prometheus"
     implementation "org.springframework.boot:spring-boot-starter-actuator"

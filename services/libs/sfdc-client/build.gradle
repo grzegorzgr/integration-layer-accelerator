@@ -1,0 +1,16 @@
+apply plugin: "java-library"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api project(":error-handling-lib")
+    api project(":model-mapper")
+    api project(":sfdc-models")
+
+    api "org.springframework:spring-web"
+    api "org.springframework.boot:spring-boot-starter-web"
+    api "org.apache.httpcomponents.client5:httpclient5:${APACHE_HTTP_COMPONENTS_CLIENTS_5_VERSION}"
+    api "org.zalando:logbook-httpclient5:${ZALANDO_LOGBOOK_VERSION}"
+}

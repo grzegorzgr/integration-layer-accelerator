@@ -75,6 +75,14 @@ spring:
           filters:
             - PrefixPathWhenNeeded
 
+        - id: account-post
+          uri: ${url.service.demo}
+          predicates:
+            - Path=/accounts/**
+            - Method=POST
+          filters:
+            - PrefixPathWhenNeeded
+
         - id: orders-post
           uri: ${url.service.camunda}
           predicates:

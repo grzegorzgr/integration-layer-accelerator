@@ -10,4 +10,6 @@ dependencies {
 
 dependencies {
     api "org.modelmapper:modelmapper:${MODEL_MAPPER_VERSION}"
+    api "com.fasterxml.jackson.core:jackson-databind"
+    api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 }
