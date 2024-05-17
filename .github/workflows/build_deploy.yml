@@ -138,7 +138,7 @@ jobs:
       - name: Deploy Etcd
         run: |
           SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-          helm status etcd-${GITHUB_REF##*/} -n ${GITHUB_REF##*/} || helm upgrade --install --wait --set persistence.enabled=false,auth.rbac.enabled=false etcd-${GITHUB_REF##*/} bitnami/etcd --namespace ${GITHUB_REF##*/}
+          helm status etcd-${GITHUB_REF##*/} -n ${GITHUB_REF##*/} || helm upgrade --install --wait --set persistence.enabled=false,auth.rbac.create=false etcd-${GITHUB_REF##*/} bitnami/etcd --namespace ${GITHUB_REF##*/}
 
   deploy-kafka:
     name: Deploy Confluent Kafka (custom)
