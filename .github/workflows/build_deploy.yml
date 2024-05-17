@@ -249,7 +249,9 @@ jobs:
         distribution: 'temurin'
 
     - name: Grant execute permissions to Gradle wrapper
-      run: chmod +x tests/gradlew
+      run: |
+        cd tests
+        echo chmod +x tests/gradlew
 
     - name: Configure Kubernetes
       run: |
