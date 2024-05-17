@@ -112,3 +112,57 @@ apps:
     tolerations: []
     affinity: {}
 
+###################################
+####### CAMUNDA APP ##############
+###################################
+  camunda:
+    name: camunda
+    image:
+      repository: ghcr.io/grzegorzgr/camunda
+      # tag: dummy
+
+    podAnnotations: {}
+
+    service:
+      type: ClusterIP
+      port: 8080
+
+    extraEnv:
+    - name: ETCD_ENDPOINT
+      value: "http://etcd-main:2379"
+    - name: SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL
+      value: "PLAINTEXT"
+    - name: KAFKA_BROKER
+      value: "kafka-main-headless:9092"
+    - name: KAFKA_SCHEMA_REGISTRY
+      value: "http://schema-registry-svc:8081"
+
+    ### TODO - customized envFrom to load values for etcd and kafka on-demand
+    # dependencies:
+    #   - kafka
+    #   - etcd
+
+    ###
+
+    resources:
+      limits:
+        cpu: 250m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+    volumes: []
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 6
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+
+    imagePullSecrets:
+    - name: regcred
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}

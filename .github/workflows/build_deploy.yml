@@ -71,7 +71,9 @@ jobs:
           docker push ghcr.io/$USERNAME/api-gateway:${GITHUB_REF##*/}
           docker push ghcr.io/$USERNAME/error-handling:${GITHUB_REF##*/}
           docker push ghcr.io/$USERNAME/demo:${GITHUB_REF##*/}
+          docker push ghcr.io/$USERNAME/camunda:${GITHUB_REF##*/}
           docker push ghcr.io/$USERNAME/petstore-stub:${GITHUB_REF##*/}
+          docker push ghcr.io/$USERNAME/sfdc-stub:${GITHUB_REF##*/}
 
   setup-workspace:
       name: Create workspace
@@ -136,7 +138,7 @@ jobs:
       - name: Deploy Etcd
         run: |
           SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-          helm status etcd-${GITHUB_REF##*/} -n ${GITHUB_REF##*/} || helm upgrade --install --wait --set persistence.enabled=false etcd-${GITHUB_REF##*/} bitnami/etcd --namespace ${GITHUB_REF##*/}
+          helm status etcd-${GITHUB_REF##*/} -n ${GITHUB_REF##*/} || helm upgrade --install --wait --set persistence.enabled=false,auth.rbac.enabled=false etcd-${GITHUB_REF##*/} bitnami/etcd --namespace ${GITHUB_REF##*/}
 
   deploy-kafka:
     name: Deploy Confluent Kafka (custom)

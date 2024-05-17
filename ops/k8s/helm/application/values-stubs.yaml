@@ -40,3 +40,43 @@ apps:
     nodeSelector: {}
     tolerations: []
     affinity: {}
+
+###################################
+####### SFDC STUB ###########
+###################################
+  sfdc:
+    name: sfdc-stub
+    image:
+      repository: ghcr.io/grzegorzgr/sfdc-stub
+      # tag: dummy
+
+    podAnnotations: {}
+
+    service:
+      type: ClusterIP
+      port: 8080
+
+    extraEnv: []
+
+    resources:
+      limits:
+        cpu: 250m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+    volumes: []
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 1
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+
+    imagePullSecrets:
+      - name: regcred
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
