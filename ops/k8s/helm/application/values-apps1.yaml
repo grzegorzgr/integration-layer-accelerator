@@ -23,6 +23,8 @@ apps:
       value: "http://error-handling-svc:8080"
     - name: URL_EXTERNAL_PETSTORE
       value: "http://petstore-stub-svc:8080"
+    - name: URL_SERVICE_CAMUNDA
+      value: "http://camunda-svc:8080"
     - name: SERVER_SSL_ENABLED
       value: "false"
     - name: SERVER_SSL_CLIENTAUTH

@@ -25,6 +25,8 @@ apps:
       value: "kafka-main-headless:9092"
     - name: PETSTORE_URL
       value: "http://petstore-stub-svc:8080"
+    - name: SFDC_AUTHENTICATED_HOST
+      value: "http://sfdc-stub-svc:8080"
 
     resources:
       limits:
