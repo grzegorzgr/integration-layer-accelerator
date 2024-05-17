@@ -16,5 +16,8 @@ popd
 pushd ../docker/stubs/petstore && ./build-image.sh
 popd
 
+pushd ../docker/stubs/sfdc && ./build-image.sh
+popd
+
 docker-compose down
 docker-compose up -d
