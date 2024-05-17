@@ -232,7 +232,7 @@ jobs:
 
   cleanup:
     name: E2E Tests
-    needs: [build-and-push, setup-workspace, deploy-etcd, deploy-kafka, deploy-application]
+    # needs: [build-and-push, setup-workspace, deploy-etcd, deploy-kafka, deploy-application]
     runs-on: arc-runner-set
     container:
       image: smartpayimages/jdk-17-slim:technical
@@ -265,7 +265,21 @@ jobs:
     - name: Run E2E Tests
       shell: bash
       run: |
-        source ops/docker/pipeline_vars.sh ${GITHUB_REF##*/}
+        source ops/docker/pipeline_vars.sh main
         cd tests
         ./gradlew -Dcucumber.execution.parallel.enabled=false clean test aggregate
 
+    - name: Archive production artifacts
+      if: success() || failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: report-package
+        path: |
+          tests/target/site
+
+    - name: Archive code coverage results
+      if: success() || failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: report
+        path: tests/target/site/reports/index.html
