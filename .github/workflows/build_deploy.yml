@@ -286,7 +286,7 @@ jobs:
 
   cleanup:
     name: Remove App
-    needs: [build-and-push, setup-workspace, deploy-etcd, deploy-kafka, deploy-application]
+    needs: [e2e]
     runs-on: arc-runner-set
     container:
       image: smartpayimages/jdk-17-slim:technical
@@ -305,7 +305,6 @@ jobs:
         mkdir $HOME/.kube
         echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
 
-    - name: Run E2E Tests
+    - name: Remove Application
       run: |
         for deployment in `helm ls -n ${GITHUB_REF##*/} -q`; do helm uninstall $deployment -n ${GITHUB_REF##*/}; done
-        kubectl delete ns ${GITHUB_REF##*/}
