@@ -250,6 +250,7 @@ jobs:
 
     - name: Grant execute permissions to Gradle wrapper
       run: |
+        ls -lah
         cd tests
         echo chmod +x tests/gradlew
 
