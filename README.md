@@ -60,8 +60,8 @@ There are two types of error-handling mechanism:
 - asynchronous
   - for Kafka based flows handled by `GlobalKafkaListenerExceptionErrorHandler` from the `error-handling-lib`
   - async errors are send to the `errors` Kafka topic and handled by the `error-handling` service
-  - for `TechicalExceptions` in the async context, there is a `consumer pausing` mechanism implemented. In such case, the messages from the related Kafka topic are not consumed. The offset of the last failed message is kept to retry the processing of the last failed message.
-  - the `error-handling` service expose two consumer related endpoints to monitor and resume all paused consumers:
+  - for `TechicalExceptions` in the async context, there is a `consumer pausing` mechanism implemented. In such case, the messages from the related Kafka topic are not consumed. The offset of the last failed message is kept to retry the processing of this message after the fix.
+  - the `error-handling` service exposes two consumer related endpoints to monitor and resume all paused consumers:
     - GET `/operations-service/paused-consumers`
     - POST `/operations-service/paused-consumers/resume`
   - there are also consumer related endpoints exposed in the specific service thanks to the `error-handling-lib` being imported:
