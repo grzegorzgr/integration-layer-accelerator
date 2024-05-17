@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/env bash
+set -e
 
 NAMESPACE=$1
 

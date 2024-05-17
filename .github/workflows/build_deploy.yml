@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - opsstuff
-      - main
+      - mainn
 
 jobs:
   build-and-push:
