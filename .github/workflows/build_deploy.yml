@@ -231,7 +231,7 @@ jobs:
         -f ./ops/k8s/helm/application/values-apps2.yaml -f ./ops/k8s/helm/application/values-common.yaml --set tag=${GITHUB_REF##*/} demo-app-${GITHUB_REF##*/} ./ops/k8s/helm/application
 
   cleanup:
-    name: Cleanup
+    name: E2E Tests
     needs: [build-and-push, setup-workspace, deploy-etcd, deploy-kafka, deploy-application]
     runs-on: arc-runner-set
     container:
@@ -243,21 +243,22 @@ jobs:
       with:
         version: 'latest'
 
+    - uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Grant execute permissions to Gradle wrapper
+      run: chmod +x gradlew
+
     - name: Configure Kubernetes
       run: |
         mkdir $HOME/.kube
         echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
 
-    - name: Setup Helm
-      uses: azure/setup-helm@v1
-      with:
-        version: '3.14.0'
-
-    - name: Remove apps
+    - name: Run E2E Tests
       run: |
-        SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-        sleep 120
-        kubectl get po -n ${GITHUB_REF##*/}
-        kubectl get deploy -o wide -n ${GITHUB_REF##*/}
-        # helm uninstall etcd-${GITHUB_REF##*/} kafka-${GITHUB_REF##*/} --namespace ${GITHUB_REF##*/}
-        # kubectl delete namespace ${GITHUB_REF##*/}
+        source ops/docker/pipeline_vars.sh ${GITHUB_REF##*/}
+        cd tests
+        ./gradlew -Dcucumber.execution.parallel.enabled=false clean test aggregate
+
