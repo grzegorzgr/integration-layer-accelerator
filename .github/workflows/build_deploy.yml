@@ -263,6 +263,9 @@ jobs:
         echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
 
     - name: Run E2E Tests
-      run:
-        shell: source ops/docker/pipeline_vars.sh ${GITHUB_REF##*/} && cd tests && ./gradlew -Dcucumber.execution.parallel.enabled=false clean test aggregate
+      shell: bash
+      run: |
+        source ops/docker/pipeline_vars.sh ${GITHUB_REF##*/}
+        cd tests
+        ./gradlew -Dcucumber.execution.parallel.enabled=false clean test aggregate
 
