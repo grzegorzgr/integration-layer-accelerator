@@ -10,8 +10,10 @@ include ':api-models'
 include ':avro-schemas'
 include ':avro-models'
 include ':petstore-models'
+include ':sfdc-models'
 
 project(":api-models").projectDir = new File("../services/libs/api-models")
 project(":avro-schemas").projectDir = new File("../services/libs/avro-schemas")
 project(":avro-models").projectDir = new File("../services/libs/avro-models")
 project(":petstore-models").projectDir = new File("../services/libs/petstore-models")
+project(":sfdc-models").projectDir = new File("../services/libs/sfdc-models")

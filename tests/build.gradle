@@ -71,6 +71,8 @@ subprojects {
     }
 }
 
+apply from: '../services/versions.gradle'
+apply from: '../services/common-methods.gradle'
 apply plugin: 'idea'
 apply plugin: "java-library"
 apply plugin: "net.serenity-bdd.serenity-gradle-plugin"
@@ -94,7 +96,6 @@ tasks.withType(JavaCompile) {
 tasks.withType(Test) {
     outputs.upToDateWhen { false }
     systemProperty "file.encoding", "utf-8"
-    systemProperty "spring.profiles.active", "onprem,cloud"
 }
 
 tasks.withType(Checkstyle) {
@@ -130,6 +131,7 @@ dependencies {
     testImplementation project(':avro-schemas')
     testImplementation project(':avro-models')
     testImplementation project(':petstore-models')
+    testImplementation project(':sfdc-models')
 
     testImplementation group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.1'
     testImplementation "org.codehaus.jackson:jackson-mapper-asl:1.9.13"

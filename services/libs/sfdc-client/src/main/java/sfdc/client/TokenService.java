@@ -14,7 +14,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.sfdc.model.OAuthTokenResponse;
+import com.sfdc.auth.model.OAuthTokenResponse;
 
 import sfdc.properties.SfdcAuthenticatedProperties;
 
