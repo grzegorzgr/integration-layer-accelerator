@@ -25,3 +25,8 @@ Feature: PetStore
     Given add new order request is prepared
     When order request is sent and gets 201
     Then order message is sent to orders kafka topic
+
+  Scenario: Sfdc - account creation
+    Given new account is prepared
+    When create new account request is sent and gets 201
+    Then new account is created

@@ -46,7 +46,6 @@ public class PetStoreSteps {
 
     @Then("new pet is added")
     public void newPetIsAdded() throws JsonProcessingException {
-
         String traceId = TestDataSerenity.get(TRACE_ID, String.class);
         PetRequest petRequest = TestDataSerenity.get(PET_REQUEST, PetRequest.class);
         CreatePetResponse createPetResponse = TestDataSerenity.get(CREATE_PET_RESPONSE, CreatePetResponse.class);
