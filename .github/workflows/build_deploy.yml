@@ -307,4 +307,4 @@ jobs:
 
     - name: Remove Application
       run: |
-        for deployment in `helm ls -n ${GITHUB_REF##*/} -q`; do helm uninstall $deployment -n ${GITHUB_REF##*/}; done
+        kubectl delete ns ${GITHUB_REF##*/}
