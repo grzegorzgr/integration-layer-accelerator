@@ -7,13 +7,13 @@ import static tests.model.TestDataKeys.TRACE_ID;
 import static tests.utils.TestDataSerenity.traceId;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sfdc.account.model.Account;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 import tests.clients.apiclients.SfdcClient;
-import tests.model.Account;
 import tests.utils.TestDataSerenity;
 import tests.utils.databuilders.AccountDataBuilder;
 import tests.validators.SfdcValidator;

@@ -7,10 +7,9 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kainos.pets.api.model.Pet;
+import com.sfdc.account.model.Account;
 
 import io.restassured.response.Response;
-import tests.model.Account;
 import tests.utils.ObjectMapperBuilder;
 
 public class SfdcValidator {

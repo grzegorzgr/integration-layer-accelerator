@@ -3,7 +3,8 @@ package tests.utils.databuilders;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 
-import tests.model.Account;
+import com.sfdc.account.model.Account;
+
 import tests.utils.EasyRandomUtils;
 
 public class AccountDataBuilder {
