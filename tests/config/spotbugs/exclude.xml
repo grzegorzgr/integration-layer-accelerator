@@ -3,10 +3,6 @@
         xmlns="https://github.com/spotbugs/filter/3.0.0"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd">
-    <Match>
-        <Bug pattern="DCN_NULLPOINTER_EXCEPTION" />
-        <Class name="com.nexigroup.ms.tests.utils.NullSafeTransformationUtil" />
-    </Match>
 
     <!-- Ignore returning references to internal representations of objects -->
     <!-- Ignoring when internal representation stores reference to external representation -->
