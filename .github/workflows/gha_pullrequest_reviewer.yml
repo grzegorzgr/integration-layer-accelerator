@@ -5,7 +5,8 @@ name: CI PR Reviewer Pipeline
 on:
   pull_request:
     branches:
-      - master
+      - main
+      - opsstuff
   workflow_dispatch:
 
 jobs: 
