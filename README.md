@@ -15,7 +15,7 @@ Subsitute namespace name, tag and application name (in test scenario it' 'custom
 
 ## application services:
 - api-gateway
-- camunda (more info in the service `README` file)
+- camunda (more info in the service README file)
 - demo
 - error-handling
 
