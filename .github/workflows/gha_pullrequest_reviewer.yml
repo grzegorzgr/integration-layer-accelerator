@@ -16,7 +16,7 @@ jobs:
       # Set environment variables for the job
       X_API_KEY: ${{ secrets.SYSTEM_API_KEY }}
       X_API_CONSUMER: ${{ secrets.SYSTEM_CONSUMER_UUID }}
-      API_HOST: ${{ vars.AEP_API_HOST }} 
+      API_HOST: "${{ vars.AEP_API_HOST }}"
       WORKING_DIRECTORY: ${{ github.workspace }}/
 
     steps:
