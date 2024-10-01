@@ -27,8 +27,8 @@ jobs:
 
       - name: Create a diff file
         run: |
-          # Generate a diff file between the current branch and 'origin/master'
-          git diff origin/master...remotes/origin/${{ github.head_ref }} > ${{ env.working_directory }}diff.txt && cat ${{ env.working_directory }}diff.txt
+          # Generate a diff file between the current branch and 'origin/main'
+          git diff origin/main...remotes/origin/${{ github.head_ref }} > ${{ env.working_directory }}diff.txt && cat ${{ env.working_directory }}diff.txt
 
       - name: Generate a response
         run: |
