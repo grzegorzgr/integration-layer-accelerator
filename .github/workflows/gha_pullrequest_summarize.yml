@@ -32,6 +32,7 @@ jobs:
 
       - name: Generate a response
         run: |
+          set -x
           # Set variables
           API_HOST=$(printenv API_HOST)
           WORKING_DIRECTORY=$(printenv WORKING_DIRECTORY)
@@ -39,8 +40,6 @@ jobs:
           X_API_KEY=$(printenv X_API_KEY)
           DIFF_FILE="diff.txt"
           RESPONSE_MD_FILE="response.md"
-
-          env | grep WORKING
 
           # Check if the diff file exists
           if [ ! -f "${WORKING_DIRECTORY}${DIFF_FILE}" ]; then
