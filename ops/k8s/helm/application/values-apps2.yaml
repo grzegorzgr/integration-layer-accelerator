@@ -22,7 +22,7 @@ apps:
     - name: SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL
       value: "PLAINTEXT"
     - name: KAFKA_BROKER
-      value: "kafka-headless:9092"
+      value: "kafka-main-headless:9092"
     - name: KAFKA_SCHEMA_REGISTRY
       value: "http://schema-registry-svc:8081"
     - name: PETSTORE_URL
@@ -78,7 +78,7 @@ apps:
     - name: SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL
       value: "PLAINTEXT"
     - name: KAFKA_BROKER
-      value: "kafka-headless:9092"
+      value: "kafka-main-headless:9092"
     - name: KAFKA_SCHEMA_REGISTRY
       value: "http://schema-registry-svc:8081"
 
@@ -137,7 +137,7 @@ apps:
     - name: SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL
       value: "PLAINTEXT"
     - name: KAFKA_BROKER
-      value: "kafka-headless:9092"
+      value: "kafka-main-headless:9092"
     - name: KAFKA_SCHEMA_REGISTRY
       value: "http://schema-registry-svc:8081"
 
