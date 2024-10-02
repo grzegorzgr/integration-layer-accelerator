@@ -188,7 +188,7 @@ jobs:
         KAFKA_LISTENER="EXTERNAL://192.168.1.112:${KAFKA_PORT}"
         helm upgrade --install --wait --namespace ${GITHUB_REF##*/} \
         --set "cp-kafka.fullnameOverride=kafka,cp-kafka.nodeport.firstListenerPort=$KAFKA_PORT,cp-kafka.configurationOverrides.advertised\\.listeners=${KAFKA_LISTENER}" \
-        --values ./ops/k8s/helm/kafka/values.yaml kafka-${GITHUB_REF##*/} ./ops/k8s/helm/kafka
+        --values ./ops/k8s/helm/kafka/values.yaml kafka ./ops/k8s/helm/kafka
   
   deploy-application:
     name: Deploy Demo app with Helm
