@@ -14,10 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     env: 
       # Set environment variables
-      X_API_KEY: "${{ secrets.SYSTEM_API_KEY }}"
-      X_API_CONSUMER: "${{ secrets.SYSTEM_CONSUMER_UUID }}"
+      X_API_KEY: ${{ secrets.SYSTEM_API_KEY }}
+      X_API_CONSUMER: ${{ secrets.SYSTEM_CONSUMER_UUID }}
       API_HOST: "${{ vars.AEP_API_HOST }}"
-      WORKING_DIRECTORY: "${{ github.workspace }}"/
+      WORKING_DIRECTORY: ${{ github.workspace }}/
+
 
     steps:
       - name: Checkout code
