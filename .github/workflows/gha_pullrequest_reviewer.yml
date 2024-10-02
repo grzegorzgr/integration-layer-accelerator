@@ -13,7 +13,7 @@ jobs:
   review:
     runs-on: ubuntu-latest
     env: 
-      # Set environment variables for the job
+      # Set environment variables
       X_API_KEY: ${{ secrets.SYSTEM_API_KEY }}
       X_API_CONSUMER: ${{ secrets.SYSTEM_CONSUMER_UUID }}
       API_HOST: "${{ vars.AEP_API_HOST }}"

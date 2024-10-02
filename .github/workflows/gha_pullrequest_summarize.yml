@@ -19,6 +19,7 @@ jobs:
       API_HOST: "${{ vars.AEP_API_HOST }}"
       WORKING_DIRECTORY: ${{ github.workspace }}/
 
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -32,7 +33,6 @@ jobs:
 
       - name: Generate a response
         run: |
-          set -x
           # Set variables
           API_HOST=$(printenv API_HOST)
           WORKING_DIRECTORY=$(printenv WORKING_DIRECTORY)
