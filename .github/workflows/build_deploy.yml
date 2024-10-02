@@ -307,7 +307,7 @@ jobs:
 
     - name: Remove Application
       run: |
-        NAMESPACES=${{ secrets.PROTECTED_NAMESPACES }}
+        NAMESPACES=("actions" "arc-systems" "cert-manager" "datadog" "default" "opsstuff" "exporters" "grafana" "helloworld" "istio-system" "kube-node-lease" "kube-public" "kube-system" "lens-metrics" "openebs")
         if [[ " ${NAMESPACES[@]} " =~ " ${GITHUB_REF} " ]]; then
           echo "GITHUB_REF is equal to one of the namespaces: ${GITHUB_REF}"
           exit 1
