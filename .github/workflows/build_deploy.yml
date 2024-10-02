@@ -2,7 +2,6 @@ name: Deploy
 on:
   push:
     branches:
-      - opsstuff
       - main
 
 jobs:
@@ -307,4 +306,9 @@ jobs:
 
     - name: Remove Application
       run: |
-        kubectl delete ns ${GITHUB_REF##*/}
+        if [[ \"${GITHUB_REF}\" =~ ^[a-zA-Z0-9-_]+$ ]]; then
+          kubectl delete ns ${GITHUB_REF}
+        else
+          echo \"Invalid namespace format\"
+          exit 1
+        fi
