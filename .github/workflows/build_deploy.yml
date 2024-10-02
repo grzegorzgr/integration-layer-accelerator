@@ -307,9 +307,11 @@ jobs:
 
     - name: Remove Application
       run: |
-        if [[ \"${GITHUB_REF}\" =~ ^[a-zA-Z0-9-_]+$ ]]; then
-          kubectl delete ns ${GITHUB_REF}
-        else
-          echo \"Invalid namespace format\"
+        NAMESPACES=(${{ secrets.PROTECTED_NAMESPACES }})
+        if [[ " ${NAMESPACES[@]} " =~ " ${GITHUB_REF} " ]]; then
+          echo "GITHUB_REF is equal to one of the namespaces: ${GITHUB_REF}"
           exit 1
+        else
+            echo "GITHUB_REF is not equal to any of the listed namespaces."
+            kubectl delete ns ${GITHUB_REF}
         fi
