@@ -16,7 +16,7 @@ jobs:
       # Set environment variables for the job
       X_API_KEY: ${{ secrets.SYSTEM_API_KEY }}
       X_API_CONSUMER: ${{ secrets.SYSTEM_CONSUMER_UUID }}
-      API_HOST: ${{ vars.AEP_API_HOST }} 
+      API_HOST: "${{ vars.AEP_API_HOST }}"
       WORKING_DIRECTORY: ${{ github.workspace }}/
 
     steps:
@@ -27,8 +27,8 @@ jobs:
 
       - name: Create a diff file
         run: |
-          # Generate a diff file containing the changes between the current branch and the master branch
-          git diff origin/master...remotes/origin/${{ github.head_ref }} > ${{ env.working_directory }}diff.txt && cat ${{ env.working_directory }}diff.txt
+          # Generate a diff file containing the changes between the current branch and the main branch
+          git diff origin/main...remotes/origin/${{ github.head_ref }} > ${{ env.working_directory }}diff.txt && cat ${{ env.working_directory }}diff.txt
 
       - name: Generate a response
         run: |
