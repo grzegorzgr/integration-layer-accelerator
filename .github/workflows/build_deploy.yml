@@ -2,8 +2,8 @@ name: Deploy
 on:
   push:
     branches:
-      - opsstuff
-      - main
+      - opsstufff
+      - mainn
 
 jobs:
   build-and-push:
