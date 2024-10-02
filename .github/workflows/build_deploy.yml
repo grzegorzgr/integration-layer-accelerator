@@ -28,52 +28,52 @@ jobs:
       - name: Java build test
         run: |
           cd services
-          echo ./gradlew clean assemble
+          ./gradlew clean assemble
 
-      # - name: Build application images
-      #   env:
-      #     USERNAME: grzegorzgr
-      #   run: |
-      #     SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-      #     ls -lah
-      #     cd ./ops/docker/services
-      #     for a in `ls`
-      #       do cd $a && \
-      #       ./build-image.sh $a:latest &&
-      #       docker tag $a:latest ghcr.io/grzegorzgr/$a:${GITHUB_REF##*/} && \
-      #       cd ..;
-      #     done
+      - name: Build application images
+        env:
+          USERNAME: grzegorzgr
+        run: |
+          SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+          ls -lah
+          cd ./ops/docker/services
+          for a in `ls`
+            do cd $a && \
+            ./build-image.sh $a:latest &&
+            docker tag $a:latest ghcr.io/grzegorzgr/$a:${GITHUB_REF##*/} && \
+            cd ..;
+          done
 
-      # - name: Build application images
-      #   env:
-      #     USERNAME: grzegorzgr
-      #   run: |
-      #     SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
-      #     ls -lah
-      #     cd ./ops/docker/stubs
-      #     for a in `ls`
-      #       do cd $a && \
-      #       ./build-image.sh $a:latest &&
-      #       docker tag $a:latest ghcr.io/grzegorzgr/$a-stub:${GITHUB_REF##*/} && \
-      #       cd ..;
-      #     done
+      - name: Build application images
+        env:
+          USERNAME: grzegorzgr
+        run: |
+          SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+          ls -lah
+          cd ./ops/docker/stubs
+          for a in `ls`
+            do cd $a && \
+            ./build-image.sh $a:latest &&
+            docker tag $a:latest ghcr.io/grzegorzgr/$a-stub:${GITHUB_REF##*/} && \
+            cd ..;
+          done
           
-      # - name: Push docker images
-      #   env:
-      #     CR_PAT: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
-      #     USERNAME: grzegorzgr
-      #   run: |
-      #     echo $CR_PAT | docker login ghcr.io -u $USERNAME --password-stdin
-      #     SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
+      - name: Push docker images
+        env:
+          CR_PAT: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+          USERNAME: grzegorzgr
+        run: |
+          echo $CR_PAT | docker login ghcr.io -u $USERNAME --password-stdin
+          SHORT_SHA=acc-$(echo ${{ github.sha }} | cut -c1-7)
 
-      #     docker images
+          docker images
 
-      #     docker push ghcr.io/$USERNAME/api-gateway:${GITHUB_REF##*/}
-      #     docker push ghcr.io/$USERNAME/error-handling:${GITHUB_REF##*/}
-      #     docker push ghcr.io/$USERNAME/demo:${GITHUB_REF##*/}
-      #     docker push ghcr.io/$USERNAME/camunda:${GITHUB_REF##*/}
-      #     docker push ghcr.io/$USERNAME/petstore-stub:${GITHUB_REF##*/}
-      #     docker push ghcr.io/$USERNAME/sfdc-stub:${GITHUB_REF##*/}
+          docker push ghcr.io/$USERNAME/api-gateway:${GITHUB_REF##*/}
+          docker push ghcr.io/$USERNAME/error-handling:${GITHUB_REF##*/}
+          docker push ghcr.io/$USERNAME/demo:${GITHUB_REF##*/}
+          docker push ghcr.io/$USERNAME/camunda:${GITHUB_REF##*/}
+          docker push ghcr.io/$USERNAME/petstore-stub:${GITHUB_REF##*/}
+          docker push ghcr.io/$USERNAME/sfdc-stub:${GITHUB_REF##*/}
 
   setup-workspace:
       name: Create workspace
