@@ -307,11 +307,11 @@ jobs:
 
     - name: Remove Application
       run: |
-        NAMESPACES=("actions" "arc-systems" "cert-manager" "datadog" "default" "opsstuff" "exporters" "grafana" "helloworld" "istio-system" "kube-node-lease" "kube-public" "kube-system" "lens-metrics" "openebs")
-        if [[ " ${NAMESPACES[@]} " =~ " ${GITHUB_REF} " ]]; then
+        NAMESPACES="${{ secrets.PROTECTED_NAMESPACES }}"
+        if echo "$NAMESPACES" | grep -w "$GITHUB_REF" > /dev/null; then
           echo "GITHUB_REF is equal to one of the namespaces: ${GITHUB_REF}"
           exit 1
         else
-            echo "GITHUB_REF is not equal to any of the listed namespaces."
-            kubectl delete ns ${GITHUB_REF}
+          echo "GITHUB_REF is not equal to any of the listed namespaces."
+          kubectl delete ns ${GITHUB_REF}
         fi
