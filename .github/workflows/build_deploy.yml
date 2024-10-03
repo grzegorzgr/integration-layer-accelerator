@@ -307,4 +307,4 @@ jobs:
 
     - name: Remove Application
       run: |
-        kubectl delete ns ${GITHUB_REF}  
+        kubectl delete ns ${GITHUB_REF##*/}
