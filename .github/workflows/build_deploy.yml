@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - main
-      - opsstuff
-
 jobs:
   build-and-push:
     name: Compile, build and push docker images
